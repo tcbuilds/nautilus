@@ -11,6 +11,7 @@ A nautilus shell grows by adding chambers, each one larger than the last by the 
 3. **[Init](workflow/02-init.md)** — `/init` generates a project-level `CLAUDE.md` rooted in the standards.
 4. **[Roadmap](workflow/03-roadmap.md)** — `/roadmap` produces `implementation_plan.md` with phased checkboxes.
 5. **[Build](workflow/04-build.md)** — `/build` dispatches specialized agents to execute the plan.
+6. **[Maintaining the Playbook](workflow/05-maintaining-the-playbook.md)** — `/nautilus-sync` promotes mature skills and agents from `~/.claude/` into this repo with sanitization.
 
 ## Repo Layout
 
@@ -23,7 +24,8 @@ nautilus/
 │   ├── 01-spec-refinement.md
 │   ├── 02-init.md
 │   ├── 03-roadmap.md
-│   └── 04-build.md
+│   ├── 04-build.md
+│   └── 05-maintaining-the-playbook.md
 ├── templates/
 │   ├── codingStandards.md
 │   ├── mvp-template.md
