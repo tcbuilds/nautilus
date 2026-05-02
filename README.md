@@ -13,7 +13,7 @@ A nautilus shell grows by adding chambers, each one larger than the last by the 
 5. **[Build](workflow/04-build.md)** — `/build` dispatches specialized agents to execute the plan.
 6. **[Incident Response](workflow/04.8-incident-response.md)** — Solo-edition severity ladder, mitigation discipline, and blameless postmortems for when production breaks.
 7. **[Retrospective](workflow/06-retrospective.md)** — Per-phase and end-of-project retros with a DORA scoreboard, feeding lessons back into the playbook.
-8. **[Maintaining the Playbook](workflow/05-maintaining-the-playbook.md)** — `/nautilus-sync` promotes mature skills and agents from `~/.claude/` into this repo with sanitization.
+8. **[Maintaining the Playbook](workflow/08-maintaining-the-playbook.md)** — `/nautilus-sync` promotes mature skills and agents from `~/.claude/` into this repo with sanitization.
 
 ## Repo Layout
 
@@ -28,8 +28,8 @@ nautilus/
 │   ├── 03-roadmap.md
 │   ├── 04-build.md
 │   ├── 04.8-incident-response.md
-│   ├── 05-maintaining-the-playbook.md
-│   └── 06-retrospective.md
+│   ├── 06-retrospective.md
+│   └── 08-maintaining-the-playbook.md
 ├── templates/
 │   ├── codingStandards.md
 │   ├── mvp-template.md
