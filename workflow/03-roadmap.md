@@ -26,6 +26,22 @@ Good task: "Add Postgres connection pool config in `src/db/pool.ts`, expose `get
 
 Bad task: "Set up the database."
 
+## INVEST + vertical slicing
+
+Every task in the plan should pass the INVEST check:
+
+- **Independent** — can be built and shipped without depending on tasks not yet completed.
+- **Negotiable** — scope can flex without breaking the plan.
+- **Valuable** — produces something demoable, even if internal.
+- **Estimable** — you can guess at duration without research.
+- **Small** — under two days of work.
+- **Testable** — has an explicit way to verify it works.
+
+Slice **vertically**, never horizontally. A vertical slice spans UI + logic + data + tests for one user-visible behavior. A horizontal slice spans "all the database, then all the API, then all the UI" — these violate Independent and Valuable, and produce nothing demoable until the end.
+
+Bad task: "Set up the database."
+Good task: "Add user signup endpoint that persists to the users table, returns a session token, and has integration test coverage."
+
 ## Exit criteria
 
 `implementation_plan.md` exists, Phase 0 covers all foundational work, every subsequent task is scoped tightly enough to delegate, and the plan as a whole covers the spec without gaps.

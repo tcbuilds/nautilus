@@ -14,6 +14,14 @@ Two non-negotiables:
 
 2. **Adherence to `codingStandards.md`** as the ground-truth rules for code style, comments, data handling, file management, git workflow, and process management. The CLAUDE.md should reference the standards file directly rather than restating it.
 
+## ADR directory
+
+Init also creates `doc/adr/` at the project root, with the first ADR seeded:
+
+- `doc/adr/0001-record-architecture-decisions.md` — establishes the practice and points at `templates/adr-template.md`.
+
+Every irreversible-or-expensive-to-reverse decision after that gets its own numbered ADR. Database choice, auth model, deploy target, runtime, language. The ADRs live next to the code, are reviewed in PRs like any other change, and are never edited after merge — when superseded, mark the old one and link forward.
+
 ## When `/init` output isn't strong enough
 
 Use `templates/CLAUDE.md.template` as the starting boilerplate. Either:
