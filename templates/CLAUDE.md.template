@@ -1,0 +1,47 @@
+# CLAUDE.md — [project name]
+
+Project-level instructions for Claude Code. Copy this template into the project root during Phase 2 (Init), then customize.
+
+## Mission / purpose
+
+[One paragraph: what is this project, who is it for, what does shipping it accomplish. Keep it tight — this is the north star every future session will read.]
+
+## Agent management
+
+- **Orchestrator-only at the top level.** The user-facing Claude Code session is an orchestrator. It does not write code, run commands, or make edits directly. All implementation work goes through specialized agents invoked via the Agent tool.
+- **Scope of the orchestrator rule.** The orchestrator-only rule applies *only* to the top-level session the user is talking to. When spawned as a subagent via the Agent tool, you ARE the specialist — you must execute the work (write code, run commands, make edits, commit, push). Do not refuse implementation work by citing the orchestrator rule. The parent has already done the delegation; your job is to ship.
+- **Mandatory delegation.** Always delegate tasks to appropriate specialized agents. No exceptions at the top level.
+- **Never use `subagent_type="general-purpose"`.** Pick a specialist. If no specialist fits, do it directly at the top level rather than falling back to general-purpose.
+- **Always pass `model="opus"`** on every Agent tool call.
+
+## Coding standards
+
+This project follows `codingStandards.md` (in the project root). That file is the ground truth for:
+
+- Comments (never inline; always above the code).
+- Data handling (no mock data, no testnet defaults, real implementations only).
+- File management (edit existing scripts when debugging; don't create parallel copies).
+- Workflow optimization (parallel tool invocation, reflect on results, clean up temp files).
+
+Read `codingStandards.md` before any non-trivial change.
+
+## Git workflow
+
+- Commit and push all completed, verified, working changes.
+- Verify before committing — run tests, exercise the code path.
+- Use descriptive commit messages that explain *why*, not just *what*.
+- **Never add `Co-Authored-By` lines for AI / Claude / any AI assistant.** Hard rule.
+
+## Data handling
+
+- No mock data.
+- No testnet defaults.
+- Real implementations or explicit declaration that the dependency isn't ready.
+
+## System commands
+
+[Project-specific systemd / process management rules go here. If this project runs as a systemd service, name the unit and require `systemctl` for lifecycle operations. If it runs differently, document the right pattern. Never use raw `kill`/`pkill` on long-running services.]
+
+## Project-specific notes
+
+[Anything else a future session needs to know that isn't covered above. Keep this section short — if it grows past a few bullets, it probably belongs in its own doc that this CLAUDE.md links to.]
