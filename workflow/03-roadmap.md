@@ -26,21 +26,16 @@ Good task: "Add Postgres connection pool config in `src/db/pool.ts`, expose `get
 
 Bad task: "Set up the database."
 
-## INVEST + vertical slicing
+## Task shape
 
-Every task in the plan should pass the INVEST check:
+Every task = one user-visible behavior built end-to-end (UI + logic + data + test). Under 2 days of work. Demoable when done.
 
-- **Independent** — can be built and shipped without depending on tasks not yet completed.
-- **Negotiable** — scope can flex without breaking the plan.
-- **Valuable** — produces something demoable, even if internal.
-- **Estimable** — you can guess at duration without research.
-- **Small** — under two days of work.
-- **Testable** — has an explicit way to verify it works.
-
-Slice **vertically**, never horizontally. A vertical slice spans UI + logic + data + tests for one user-visible behavior. A horizontal slice spans "all the database, then all the API, then all the UI" — these violate Independent and Valuable, and produce nothing demoable until the end.
+No horizontal "set up the database" or "build the API layer" tasks. Those are not tasks — they hide inside a feature task. A real task lands a slice of the product, top to bottom.
 
 Bad task: "Set up the database."
 Good task: "Add user signup endpoint that persists to the users table, returns a session token, and has integration test coverage."
+
+If the task is too big to ship in 2 days, split it into thinner vertical slices, not horizontal layers.
 
 ## Exit criteria
 
