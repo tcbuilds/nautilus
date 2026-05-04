@@ -15,6 +15,10 @@ A nautilus shell grows by adding chambers, each one larger than the last by the 
 7. **[Retrospective](workflow/06-retrospective.md)** — Per-phase and end-of-project retros with a DORA scoreboard, feeding lessons back into the playbook.
 8. **[Maintaining the Playbook](workflow/08-maintaining-the-playbook.md)** — `/nautilus-sync` promotes mature skills and agents from `~/.claude/` into this repo with sanitization.
 
+## Cross-cutting
+
+- **[Token Economy](token-economy.md)** — `caveman` mode and `rtk` cut token spend across every phase. Foundational infrastructure for any long-running Claude Code workflow.
+
 ## Repo Layout
 
 ```
@@ -47,7 +51,8 @@ nautilus/
 ├── examples/
 │   └── README.md
 ├── skills-index.md
-└── agents-index.md
+├── agents-index.md
+└── token-economy.md
 ```
 
 ## How to use this repo
