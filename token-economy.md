@@ -6,12 +6,14 @@ Cross-cutting tooling that cuts token spend across every workflow phase. Tokens 
 
 | Tool | Side it cuts | How it works | Typical savings |
 |---|---|---|---|
-| **caveman mode** | Output (assistant → user) | Compression style applied to assistant prose. Drops articles, filler, hedging, pleasantries. Keeps code, errors, identifiers exact. | ~50–75% on prose responses |
-| **rtk** | Tool input (shell → context) | Rust CLI proxy that intercepts common dev commands (`git`, `ls`, `grep`, etc.) and returns filtered, compact output instead of raw verbose dumps. | ~60–90% on dev-command tool results |
+| **[caveman](https://github.com/JuliusBrussee/caveman)** | Output (assistant → user) | Compression style applied to assistant prose. Drops articles, filler, hedging, pleasantries. Keeps code, errors, identifiers exact. | ~50–75% on prose responses |
+| **[rtk](https://github.com/rtk-ai/rtk)** | Tool input (shell → context) | Rust CLI proxy that intercepts common dev commands (`git`, `ls`, `grep`, etc.) and returns filtered, compact output instead of raw verbose dumps. | ~60–90% on dev-command tool results |
 
 They stack. caveman shrinks what the model writes back to you; rtk shrinks what the model has to read from tool results. Together they extend the practical lifespan of a session by 2–3× before context pressure forces compaction.
 
 ## caveman mode
+
+Built and maintained by [Julius Brussee](https://github.com/JuliusBrussee) — source at [github.com/JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman).
 
 A compression skill activated via `/caveman` with three intensity levels:
 
@@ -26,6 +28,8 @@ Code blocks, function names, API names, and error strings are never abbreviated 
 **When to skip caveman entirely**: writing commits, PR descriptions, documentation, customer-facing copy, or any artifact that will be read outside the session. Caveman is for the live conversation channel, not for shipped prose.
 
 ## rtk
+
+Built and maintained by the [rtk-ai](https://github.com/rtk-ai) team — source at [github.com/rtk-ai/rtk](https://github.com/rtk-ai/rtk).
 
 A Rust-based CLI proxy that sits between Claude Code and the shell. Every dev command Claude Code would normally run gets transparently rewritten through rtk, which strips noise (paginator headers, ANSI escapes, ASCII art, boilerplate progress lines) and returns the structured signal the model actually needs.
 
