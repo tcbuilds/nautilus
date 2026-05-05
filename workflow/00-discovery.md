@@ -11,7 +11,11 @@ Where ideas get fleshed out before any code or tooling is involved.
 A rough idea. Could be one sentence, could be a paragraph, could be a screenshot of something that inspired you.
 
 ```
-Let's make a trading bot for X exchange. Ideally with lowest latency possible. What all does that entail? Where should I place infrastructure? Let's create an idea.md we'll use as a living doc and you can quiz me about important architectural setups before finalizing. use askuserquestiontool.
+Let's make a trading bot for X exchange. Ideally with lowest latency possible. 
+What all does that entail? 
+Where should I place infrastructure? 
+Let's create an idea.md we'll use as a living doc.
+Quiz me about important architectural setups before finalizing. use askuserquestiontool.
 ```
 
 ## Output
