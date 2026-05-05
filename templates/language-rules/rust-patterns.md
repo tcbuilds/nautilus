@@ -2,7 +2,7 @@
 
 Assumes Rust 1.80+ / edition 2021.
 
-Project-specific Rust idioms and constraints. Copy into `.claude/rules/` of any new project, then trim or extend per project needs. Pairs with the cross-language `codingStandards.md` baseline.
+Project-specific Rust idioms and constraints. Copy into `.claude/rules/` of any new project, then trim or extend per project needs. Pairs with the cross-language `../codingStandards.md` baseline.
 
 ## Non-Negotiable Rules
 

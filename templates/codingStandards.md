@@ -2,6 +2,8 @@
 
 These standards exist to prevent slop, slow code, hidden coupling, and hard-to-debug failures. They apply to all production code, tests, scripts, infrastructure, and generated code that is committed to the repository.
 
+For per-language pattern files (Rust, Python, TypeScript) that extend this baseline with idioms and constraints specific to a single language, see `language-rules/`. Each project copies one file from there into `.claude/rules/` so Claude Code auto-loads it alongside this baseline.
+
 ## Core Principles
 
 1. Correctness beats cleverness.

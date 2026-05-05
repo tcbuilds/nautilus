@@ -36,9 +36,11 @@ nautilus/
 │   └── 08-maintaining-the-playbook.md
 ├── templates/
 │   ├── codingStandards.md
-│   ├── rust-patterns.md
-│   ├── python-patterns.md
-│   ├── typescript-patterns.md
+│   ├── language-rules/
+│   │   ├── README.md
+│   │   ├── rust-patterns.md
+│   │   ├── python-patterns.md
+│   │   └── typescript-patterns.md
 │   ├── mvp-template.md
 │   ├── idea-template.md
 │   ├── CLAUDE.md.template
@@ -61,7 +63,7 @@ nautilus/
 ## How to use this repo
 
 - **Bootstrap a new project** by copying the relevant templates (`codingStandards.md`, `CLAUDE.md.template`, `mvp-template.md` or `idea-template.md`) into the project root.
-- **Per-language pattern templates** (`rust-patterns.md`, `python-patterns.md`, `typescript-patterns.md`) are starting points — copy the relevant one into a new project's `.claude/rules/` and trim or extend per project needs.
+- **Per-language pattern templates** (`templates/language-rules/rust-patterns.md`, `templates/language-rules/python-patterns.md`, `templates/language-rules/typescript-patterns.md`) are starting points — copy the relevant one into a new project's `.claude/rules/` and trim or extend per project needs.
 - **Reference the workflow docs** in order — each phase has a single short page describing what to run, what the output is, and when to move on.
 - **Contribute back.** Living asset, not artifact. Every project that uses this playbook updates the playbook in the same PR — new lessons, new skills, new agent patterns. The shell grows with each chamber.
 - **Pull this repo** as a reference inside future Claude Code sessions when you need the canonical version of the workflow.
