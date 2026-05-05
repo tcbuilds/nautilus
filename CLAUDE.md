@@ -9,7 +9,7 @@ A documentation and playbook repo. There is no application code here, and there 
 ## Editing rules
 
 - Edits should be content-focused: clarifying workflow, adding examples, refining templates, expanding the skills/agents indices as new ones prove themselves.
-- Preserve the public-facing tone. This repo is private now but will flip public. No personal references, no credentials, no project-specific business details that don't belong in a public artifact.
+- Preserve the public-facing tone. No personal references, credentials, or project-specific business details that do not belong in a reusable public artifact.
 - When adding new skills, agents, or examples, follow the existing naming and structure pattern. Each skill or agent gets its own short markdown file under `skills/` or `agents/`. Each example gets its own subdirectory under `examples/`.
 - Workflow docs stay short and skim-readable. If a doc grows past ~60 seconds of reading, split it.
 
@@ -21,7 +21,7 @@ A documentation and playbook repo. There is no application code here, and there 
 
 ## Standards this playbook teaches
 
-The user maintains a global `CLAUDE.md` with project-portable rules. This repo treats those rules as ground truth and teaches projects to adopt them. Key principles referenced throughout the workflow docs:
+This repo captures project-portable AI-assisted engineering rules and teaches projects to adopt them. Key principles referenced throughout the workflow docs:
 
 - **Orchestrator-only at the top level.** The user-facing Claude Code session never writes code, runs commands, or makes edits directly. All implementation work goes to specialized agents via the Agent tool.
 - **Mandatory delegation.** Use specialized agents, never `general-purpose`. Always pass `model="opus"` on Agent calls.

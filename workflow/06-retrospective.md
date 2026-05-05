@@ -8,9 +8,9 @@ The playbook is a living asset; so is the project. After each phase of the imple
 - After every customer-impacting incident (the postmortem doubles as a partial retro).
 - At end of project, before flipping to maintenance mode.
 
-## DORA scoreboard (solo edition)
+## DORA scoreboard
 
-Track four numbers per project. Eyeball them after each retro. The goal is direction of travel, not absolute targets — solo numbers will not match elite-team benchmarks, and that is fine.
+Track four numbers per project. Review them after each retro. The goal is direction of travel, not absolute targets.
 
 | Metric | What it measures | How to track |
 |---|---|---|
@@ -31,7 +31,7 @@ Concrete artifacts: this skill, this agent, this template, this rule, this commi
 
 ### What did not work
 
-Specific frictions. "Skill X kept failing on Y," "agent Z misread the spec," "I lost three hours on W." Name the thing.
+Specific frictions. "Skill X kept failing on Y," "agent Z misread the spec," "three hours were lost on W." Name the thing.
 
 ### What surprised me
 
@@ -45,7 +45,7 @@ Concrete next experiments. New skill to build, new agent pattern to try, new che
 
 | Owner | Action | Due date |
 |---|---|---|
-| me | ... | YYYY-MM-DD |
+| Project owner | ... | YYYY-MM-DD |
 
 ## Feed the playbook
 
