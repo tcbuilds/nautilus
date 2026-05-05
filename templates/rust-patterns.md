@@ -1,13 +1,15 @@
 # Rust Patterns — Project Development Rules
 
+Assumes Rust 1.80+ / edition 2021.
+
 Project-specific Rust idioms and constraints. Copy into `.claude/rules/` of any new project, then trim or extend per project needs. Pairs with the cross-language `codingStandards.md` baseline.
 
 ## Non-Negotiable Rules
 
-- No `unwrap()` or `expect()` in production paths. Tests may use `.expect("reason")` with a stated reason.
+- No `unwrap()` or `expect()` in production paths. Tests may use `.expect("reason")` with a stated reason. Carve-out: `.expect("reason")` is allowed in static initializers (`LazyLock`) and on `Mutex::lock()` where panic-on-poison is the documented contract.
 - Every error crossing a function boundary carries context via `.context()` or `.with_context()`.
-- Application binaries use `anyhow::Result`; libraries define typed errors via `thiserror`.
-- Regex patterns are compiled once with `once_cell::sync::Lazy` (or `lazy_static!`). Never `Regex::new()` inside a hot path.
+- Application binaries use `anyhow::Result`; libraries define typed errors via `thiserror = "2"`.
+- Regex patterns are compiled once with `std::sync::LazyLock` (Rust 1.80+). Never `Regex::new()` inside a hot path. For MSRV < 1.80, fall back to `once_cell::sync::Lazy`.
 - Function signatures take borrows (`&str`, `&[T]`, `&Path`) by default. Take ownership only when ownership is required.
 - Iterator chains beat hand-rolled `for` + `Vec::push` for transformation pipelines.
 - `match` arms are exhaustive and explicit. Never silently swallow `Err(_) => {}`.
@@ -64,11 +66,12 @@ fn extract_id(input: &str) -> Option<&str> {
 ```
 
 ```rust
-// ✅ Compiled once, shared via Lazy.
-use once_cell::sync::Lazy;
+// ✅ Compiled once, shared via LazyLock (Rust 1.80+).
+use std::sync::LazyLock;
+
 use regex::Regex;
 
-static ID_RE: Lazy<Regex> = Lazy::new(|| {
+static ID_RE: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"id=([0-9a-f]{8})").expect("ID_RE pattern is valid")
 });
 
@@ -76,6 +79,8 @@ fn extract_id(input: &str) -> Option<&str> {
     ID_RE.captures(input).and_then(|c| c.get(1).map(|m| m.as_str()))
 }
 ```
+
+For MSRV < 1.80, substitute `once_cell::sync::Lazy` (same shape).
 
 ## Borrowing And Ownership
 
@@ -136,6 +141,8 @@ async fn add(a: u64, b: u64) -> u64 {
 
 ```rust
 // ✅ Sync code stays sync. Async code uses tokio primitives end to end.
+use anyhow::Context;
+
 fn add(a: u64, b: u64) -> u64 {
     a + b
 }
@@ -150,6 +157,16 @@ async fn fetch_with_timeout(client: &reqwest::Client, url: &str) -> anyhow::Resu
     resp.text().await.context("failed to read body")
 }
 ```
+
+### Async hazards
+
+- Spawned futures must be `Send + 'static`. A non-`Send` value (e.g. `Rc`, `RefCell`, `MutexGuard` from `std::sync::Mutex`) held across `.await` will fail to compile under `tokio::spawn`.
+- `std::sync::Mutex` (and `parking_lot::Mutex`) held across `.await` is a hazard — both are blocking locks that park the async executor thread on contention, stalling every other task on that worker. Use `tokio::sync::Mutex` when the guard must span an await point; keep blocking mutexes for short, sync-only critical sections.
+- `select!` branches must be cancellation-safe. If a future is dropped mid-`.await`, partial state must be recoverable. Wrap non-cancel-safe work in a separate task and select on its handle.
+- Prefer `tokio::task::JoinSet` over raw `tokio::spawn` when managing a dynamic group of tasks — it propagates panics, cancels on drop, and yields results in completion order.
+- Use `tokio::task::spawn_blocking` for CPU-bound or blocking syscalls; never run them on the async runtime threads.
+- Prefer native AFIT (async fn in trait, Rust 1.75+) for static dispatch; reach for `async-trait` only when you need `dyn Trait`.
+- Never call `block_on` (or `Handle::block_on`) inside an async context — it deadlocks the runtime.
 
 ## Match Exhaustiveness
 
@@ -166,14 +183,13 @@ fn parse_port(raw: &str) -> Option<u16> {
 ```
 
 ```rust
-// ✅ Logged at the boundary that handles the failure, fallback is explicit.
-fn parse_port(raw: &str) -> Option<u16> {
+// ✅ Each arm is explicit; the error variant is named, contextualised, and propagated.
+use anyhow::{Context, Result};
+
+fn parse_port(raw: &str) -> Result<u16> {
     match raw.parse::<u16>() {
-        Ok(p) => Some(p),
-        Err(e) => {
-            tracing::warn!(error = %e, raw, "invalid port, falling back to None");
-            None
-        }
+        Ok(port) => Ok(port),
+        Err(e) => Err(e).with_context(|| format!("invalid port: {raw:?}")),
     }
 }
 ```
@@ -189,6 +205,8 @@ fn send_welcome(email: String) { /* ... */ }
 
 ```rust
 // ✅ Email is constructable only through a validating constructor.
+// Shown in application style with anyhow; library-shaped newtypes return typed
+// errors (see thiserror example under "Error Handling").
 #[derive(Debug, Clone)]
 pub struct Email(String);
 
@@ -213,10 +231,10 @@ Canonical layout for a new Rust module file:
 
 ```rust
 // 1. Imports — std, then external crates, then crate-local.
+use std::sync::LazyLock;
 use std::time::Duration;
 
 use anyhow::{Context, Result};
-use once_cell::sync::Lazy;
 use regex::Regex;
 
 use crate::domain::Email;
@@ -225,7 +243,9 @@ use crate::domain::Email;
 pub struct Mailer { /* ... */ }
 
 // 3. Lazy statics (regex, configs).
-static EMAIL_RE: Lazy<Regex> = Lazy::new(|| Regex::new(r".+@.+").expect("valid"));
+// Illustrative only — real email validation belongs in a typed newtype, not a regex.
+static EMAIL_RE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r".+@.+").expect("EMAIL_RE pattern is valid"));
 
 // 4. Public entry points.
 impl Mailer {
@@ -268,10 +288,14 @@ fn email_parse_rejects_missing_at_sign() {
 | Pattern                                  | Problem                                                | Fix                                                  |
 | ---------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------- |
 | `.unwrap()` in production code           | Panic on the user's hot path, no context              | Return `Result`, attach context, or `?` propagate    |
-| `Regex::new()` inside a function         | Recompiles per call, hidden allocation                | `Lazy<Regex>` at module scope                        |
+| `Regex::new()` inside a function         | Recompiles per call, hidden allocation                | `LazyLock<Regex>` at module scope                    |
 | `&String` in fn signature                | Forces `String` allocation on caller                   | `&str`                                               |
 | `for x in ... { out.push(...) }`         | Manual loop hides transformation intent               | Iterator chain `.filter().map().collect()`           |
 | `async fn` with no `.await`              | Async overhead, no concurrency benefit                | Make it `fn` and remove the runtime                  |
 | `Err(_) => {}`                           | Silent failure, undebuggable                          | Log + explicit fallback, or propagate                |
 | Raw `String` for validated values        | Invalid values flow through the codebase              | Newtype with a validating constructor                |
 | `unsafe` without invariant docs          | Memory unsafety with no audit trail                   | Document invariants, isolate, justify in review      |
+| `Arc<std::sync::Mutex<T>>` held across `.await` | Blocks the async executor thread on contention; deadlock risk | Use `tokio::sync::Mutex` when the guard must cross `.await` |
+| `parking_lot::Mutex` held across `.await` | Blocks the async executor thread on contention; no async support | `tokio::sync::Mutex` when guards must cross `.await`; keep `parking_lot` for sync-only critical sections |
+| `block_on` inside async                  | Deadlocks the runtime                                 | Restructure as `.await`, or `spawn_blocking` for blocking work |
+| Spawned future is not `Send`             | `tokio::spawn` requires `Send + 'static`              | Drop non-`Send` values before `.await`, or use `spawn_local` on a `LocalSet` |

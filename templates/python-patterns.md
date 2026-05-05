@@ -4,8 +4,9 @@ Project-specific Python idioms and constraints. Copy into `.claude/rules/` of an
 
 ## Non-Negotiable Rules
 
+- Minimum Python version: **3.10**. Examples below assume 3.10+ features (`@dataclass(slots=True)`, structural pattern matching, parenthesized context managers).
 - Type hints are required on every function signature and class attribute. `mypy --strict` is the aspiration.
-- Use `from __future__ import annotations` on Python 3.9–3.11 codebases; native union syntax (`int | None`) on 3.12+.
+- On 3.10+, native union syntax (`int | None`) is supported at runtime; `from __future__ import annotations` is no longer required for that purpose but may still be used for forward-reference flexibility.
 - No bare `except:` and no `except Exception:` without logging context and either re-raising or converting.
 - No mutable default arguments. Default to `None` and initialize inside the function body.
 - Async code never calls blocking primitives (`time.sleep`, `requests.get`, sync DB drivers). Use `asyncio.sleep`, `httpx`, async drivers.
@@ -53,13 +54,21 @@ Custom exception classes belong to the domain that raises them. Re-raise with `r
 
 ```python
 # ❌ time.sleep blocks the entire event loop.
+import asyncio
+import time
+
+
 async def poll_until_ready(client) -> None:
     while not await client.ready():
         time.sleep(1)
 ```
 
 ```python
-# ✅ asyncio.sleep yields control. asyncio.gather parallelizes independent work.
+# ✅ asyncio.sleep yields control. asyncio.TaskGroup (3.11+) is the preferred
+# structured-concurrency primitive — child failures cancel siblings and the
+# group raises an ExceptionGroup. asyncio.gather is the 3.10 fallback; note
+# its default return_exceptions=False re-raises the first exception while
+# leaving siblings running until they finish or are GC'd.
 import asyncio
 
 
@@ -68,7 +77,17 @@ async def poll_until_ready(client) -> None:
         await asyncio.sleep(1)
 
 
+# Preferred on 3.11+: structured concurrency via TaskGroup.
 async def warm_caches(client) -> None:
+    async with asyncio.TaskGroup() as tg:
+        tg.create_task(client.warm("users"))
+        tg.create_task(client.warm("orders"))
+        tg.create_task(client.warm("inventory"))
+
+
+# Fallback on 3.10: asyncio.gather. return_exceptions=False (the default)
+# re-raises the first failure; pass True to collect results-or-exceptions.
+async def warm_caches_legacy(client) -> None:
     await asyncio.gather(
         client.warm("users"),
         client.warm("orders"),
@@ -80,6 +99,10 @@ Fire-and-forget tasks need explicit references and cancellation handling:
 
 ```python
 # ✅ Track the task so it can be cancelled on shutdown; surface exceptions.
+import asyncio
+import contextlib
+
+
 async def run_service(client) -> None:
     background = asyncio.create_task(heartbeat(client), name="heartbeat")
     try:
@@ -126,7 +149,9 @@ def credit_account(req: CreditRequest) -> None:
 
 ## Logging
 
-Module-level logger. Structured fields via `extra=`. Never `print()` in importable code.
+Module-level logger. Pass structured fields via `extra=`; configure a JSON formatter (e.g. `python-json-logger`) at the logging root for those fields to land in output — the stdlib default formatter ignores `extra` keys. `structlog` is an alternative if you want a richer event-driven API. Never `print()` in importable code.
+
+Lazy formatting: pass interpolation args to the logger (`logger.info("user %s", user)`) so the message is only built when the level is enabled. Use f-strings only when the message will definitely emit.
 
 ```python
 # ❌ Print loses log level, has no structured fields, cannot be silenced.
@@ -136,7 +161,21 @@ def send_email(to: str) -> None:
 
 ```python
 # ✅ Structured logger, configurable level, machine-parseable fields.
+# Requires a JSON formatter at the root for `extra=` to appear in output.
 import logging
+
+from pythonjsonlogger import jsonlogger
+
+
+def configure_logging() -> None:
+    handler = logging.StreamHandler()
+    handler.setFormatter(
+        jsonlogger.JsonFormatter("%(asctime)s %(name)s %(levelname)s %(message)s")
+    )
+    root = logging.getLogger()
+    root.handlers = [handler]
+    root.setLevel(logging.INFO)
+
 
 logger = logging.getLogger(__name__)
 
@@ -192,19 +231,18 @@ Canonical layout for a new Python module:
 
 from __future__ import annotations
 
-# stdlib
 import logging
 from dataclasses import dataclass
 
-# third-party
 import httpx
 from pydantic import BaseModel
 
-# local
 from myapp.config import Settings
+
 
 # Module-level logger.
 logger = logging.getLogger(__name__)
+
 
 # Constants — uppercase, units in the name when applicable.
 DEFAULT_TIMEOUT_SECONDS = 5.0
@@ -243,6 +281,7 @@ if __name__ == "__main__":
 
 ```python
 import pytest
+from pydantic import ValidationError
 
 from myapp.billing import credit_account, CreditRequest
 
@@ -252,7 +291,7 @@ from myapp.billing import credit_account, CreditRequest
     ["0", "-1", "-0.01"],
 )
 def test_credit_rejects_non_positive_amount(amount: str) -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(ValidationError):
         CreditRequest(account_id="a1", amount=amount)
 ```
 
@@ -260,10 +299,11 @@ def test_credit_rejects_non_positive_amount(amount: str) -> None:
 
 | Pattern                          | Problem                                              | Fix                                                |
 | -------------------------------- | ---------------------------------------------------- | -------------------------------------------------- |
-| `except:` or bare `except Exception:` | Swallows `KeyboardInterrupt`, hides bugs       | Catch specific types, log, re-raise with `from e`  |
+| Bare `except:`                   | Catches `BaseException` — swallows `KeyboardInterrupt` and `SystemExit`, breaks Ctrl-C and graceful shutdown | Catch specific types, log, re-raise with `from e` |
+| `except Exception:` without logging context and re-raise/conversion | Does not catch interrupts, but still hides bugs and loses the cause | Catch specific types where possible; if you must catch broadly, log with context and re-raise or convert with `from e` |
 | `def f(xs=[])`                   | Default list is shared across all calls              | `xs: list \| None = None`, create inside           |
 | `print()` in library code        | No level, no structured fields, cannot be silenced   | `logger = logging.getLogger(__name__)`             |
-| `dict[str, Any]` in business logic | No validation, no field discoverability            | `pydantic.BaseModel` at the boundary, `@dataclass` inside |
+| `dict[str, Any]` in business logic | No validation, no field discoverability. (Read-only views typed as `Mapping[str, X]` are fine; the rule targets unvalidated payloads flowing through call chains.) | `pydantic.BaseModel` at the boundary, `@dataclass` inside |
 | `time.sleep` in `async def`      | Blocks the entire event loop                         | `await asyncio.sleep(...)`                         |
 | `requests.get` in async code     | Sync HTTP blocks the loop                            | `httpx.AsyncClient` with explicit timeout          |
 | Wildcard imports                 | Pollutes namespace, breaks `mypy` and refactor tools | Explicit named imports                             |
