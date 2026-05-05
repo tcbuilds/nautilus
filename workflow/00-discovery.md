@@ -4,11 +4,15 @@ Where ideas get fleshed out before any code or tooling is involved.
 
 ## Where it happens
 
-**claude.ai web**, not Claude Code. Long-form back-and-forth in a browser tab is the right environment for this stage. Local CLI sessions burn context on file reads and tool calls; the web chat lets you think out loud across many turns without that overhead.
+**claude.ai web**, not Claude Code (could work, but haven't tested/also no deep research). Long-form back-and-forth in a browser tab is the right environment for this stage. Local CLI sessions burn context on file reads and tool calls; the web chat lets you think out loud across many turns without that overhead.
 
 ## Input
 
 A rough idea. Could be one sentence, could be a paragraph, could be a screenshot of something that inspired you.
+
+```
+Let's make a trading bot for X exchange. Ideally with lowest latency possible. What all does that entail? Where should I place infrastructure? Let's create an idea.md we'll use as a living doc and you can quiz me about important architectural setups before finalizing. use askuserquestiontool.
+```
 
 ## Output
 
