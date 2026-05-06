@@ -1,6 +1,10 @@
-# nautilus
+<p align="center">
+  <img src="nautilus.jpg" alt="Nautilus shell" width="320">
+</p>
 
-**AI-augmented SDLC playbook — idea -> spec -> standards -> roadmap -> ship.**
+<h1 align="center">nautilus</h1>
+
+<p align="center"><strong>AI-augmented SDLC playbook — idea → spec → standards → roadmap → ship.</strong></p>
 
 Nautilus is a reusable software delivery playbook for developers who use AI as an engineering accelerator without lowering the bar for planning, review, testing, incident response, or documentation. It turns loose product ideas into scoped specs, implementation plans, standards, and shipping routines that can be reused across projects.
 
