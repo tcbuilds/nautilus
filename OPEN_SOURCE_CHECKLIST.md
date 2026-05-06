@@ -9,6 +9,7 @@ Use this before making the repository public.
 - [ ] Confirm default branch is `main`.
 - [ ] Enable issues and discussions if maintainers want public feedback.
 - [ ] Verify `install.sh` succeeds against a fresh temp directory after publishing.
+- [ ] Verify `install-tools.sh` succeeds against a fresh `$HOME/.claude` after publishing (skills/agents may be empty in early phases).
 
 ## Safety
 

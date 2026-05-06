@@ -25,6 +25,8 @@ AI-assisted development is still software development. Nautilus makes that visib
 
 ## Quickstart
 
+### Install project standards
+
 Bootstrap the cross-language baseline plus per-language pattern files into any project with a single command:
 
 ```sh
@@ -61,12 +63,57 @@ rm -rf nautilus-main
 
 Swap `rust-patterns.md` for `python-patterns.md` or `typescript-patterns.md` (or copy multiple) as needed.
 
+### Install user-level tooling
+
+Sync the playbook's sanitized Claude Code skills and agents into `$HOME/.claude/` so they auto-load in every session:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh
+```
+
+That writes each skill into `$HOME/.claude/skills/<skill-name>/` and each agent into `$HOME/.claude/agents/<agent-name>.md`. Defaults install everything available; existing files are overwritten (sync semantics).
+
+Filter by name or opt out of clobbering:
+
+```sh
+# Specific skills only
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- --skills refine-spec,build
+
+# Specific agents only
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- --agents github-master
+
+# Refuse to overwrite anything that already exists in ~/.claude/
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- --no-overwrite
+
+# Different destination root
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- --dest /tmp/fresh-claude
+```
+
+See `sh install-tools.sh --help` for the full flag list (`--skills`, `--agents`, `--dest`, `--no-overwrite`, `--ref`).
+
+The skill and agent payload fills out as artifacts mature in the playbook. In early phases the installer may report "no skills available" or "no agents available" and exit cleanly — that is expected.
+
+If you would rather not pipe `curl` to `sh`, do it manually with the tarball:
+
+```sh
+curl -L https://github.com/tcbuilds/nautilus/archive/main.tar.gz | tar xz
+mkdir -p ~/.claude/skills ~/.claude/agents
+# Copy each skill directory you want (skip the framing README.md):
+cp -R nautilus-main/skills/<skill-name> ~/.claude/skills/
+# Copy each agent file you want (skip the framing README.md):
+cp nautilus-main/agents/<agent-name>.md ~/.claude/agents/
+rm -rf nautilus-main
+```
+
+The repo-level `skills/README.md` and `agents/README.md` are framing docs about the convention — they are not loadable artifacts, so leave them out of `~/.claude/`.
+
 ## Repo Layout
 
 ```
 nautilus/
 ├── README.md
-├── install.sh                      # one-shot bootstrap installer
+├── install.sh                      # project-level bootstrap installer
+├── install-tools.sh                # user-level skills + agents installer
 ├── .github/                        # PR and issue templates
 ├── AGENTS.md                       # contributor guide for AI agents and maintainers
 ├── CONTRIBUTING.md                 # contribution and validation workflow
