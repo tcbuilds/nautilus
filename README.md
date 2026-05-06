@@ -23,11 +23,50 @@ AI-assisted development is still software development. Nautilus makes that visib
 
 - **[Token Economy](token-economy.md)** — `caveman` mode and `rtk` cut token spend across every phase. Foundational infrastructure for any long-running Claude Code workflow.
 
+## Quickstart
+
+Bootstrap the cross-language baseline plus per-language pattern files into any project with a single command:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install.sh | sh
+```
+
+That writes `./codingStandards.md` and `./.claude/rules/{rust,python,typescript}-patterns.md` (plus the rules `README.md`) into the current directory.
+
+Filter by language:
+
+```sh
+# Rust only
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install.sh | sh -s -- --lang rust
+
+# Polyglot subset
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install.sh | sh -s -- --lang rust,typescript
+
+# Different target directory; overwrite if files already exist
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install.sh | sh -s -- --dest ./myproj --force
+```
+
+See `sh install.sh --help` for the full flag list (`--lang`, `--dest`, `--force`, `--ref`).
+
+If you would rather not pipe `curl` to `sh`, do it manually with the tarball:
+
+```sh
+curl -L https://github.com/tcbuilds/nautilus/archive/main.tar.gz | tar xz
+mkdir -p .claude/rules
+cp nautilus-main/templates/codingStandards.md ./
+cp nautilus-main/templates/language-rules/README.md .claude/rules/
+cp nautilus-main/templates/language-rules/rust-patterns.md .claude/rules/
+rm -rf nautilus-main
+```
+
+Swap `rust-patterns.md` for `python-patterns.md` or `typescript-patterns.md` (or copy multiple) as needed.
+
 ## Repo Layout
 
 ```
 nautilus/
 ├── README.md
+├── install.sh                      # one-shot bootstrap installer
 ├── .github/                        # PR and issue templates
 ├── AGENTS.md                       # contributor guide for AI agents and maintainers
 ├── CONTRIBUTING.md                 # contribution and validation workflow
@@ -74,8 +113,7 @@ nautilus/
 
 ## How to use this repo
 
-- **Bootstrap a new project** by copying the relevant templates (`codingStandards.md`, `CLAUDE.md.template`, `mvp-template.md` or `idea-template.md`) into the project root.
-- **Per-language pattern templates** (`templates/language-rules/rust-patterns.md`, `templates/language-rules/python-patterns.md`, `templates/language-rules/typescript-patterns.md`) are starting points — copy the relevant one into a new project's `.claude/rules/` and trim or extend per project needs.
+- **Bootstrap a new project** with the [Quickstart](#quickstart) one-liner — it drops `codingStandards.md` and the language pattern files into the right places automatically. For other templates (`CLAUDE.md.template`, `mvp-template.md`, `idea-template.md`), copy them in by hand from `templates/`.
 - **Reference the workflow docs** in order — each phase has a single short page describing what to run, what the output is, and when to move on.
 - **Contribute back.** Living asset, not artifact. Every project that uses this playbook updates the playbook in the same PR — new lessons, new skills, new agent patterns. The shell grows with each chamber.
 - **Pull this repo** as a reference inside future Claude Code sessions when you need the canonical version of the workflow.

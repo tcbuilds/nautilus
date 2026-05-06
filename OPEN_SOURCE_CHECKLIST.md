@@ -8,6 +8,7 @@ Use this before making the repository public.
 - [ ] Add topics: `sdlc`, `ai-assisted-development`, `developer-workflow`, `claude-code`, `templates`, `software-engineering`.
 - [ ] Confirm default branch is `main`.
 - [ ] Enable issues and discussions if maintainers want public feedback.
+- [ ] Verify `install.sh` succeeds against a fresh temp directory after publishing.
 
 ## Safety
 
