@@ -4,18 +4,18 @@ Use this before making the repository public.
 
 ## Repository metadata
 
-- [ ] Set repository description: "AI-augmented SDLC playbook for shipping software with specs, standards, roadmaps, agents, and retrospectives."
-- [ ] Add topics: `sdlc`, `ai-assisted-development`, `developer-workflow`, `claude-code`, `templates`, `software-engineering`.
-- [ ] Confirm default branch is `main`.
-- [ ] Enable issues and discussions if maintainers want public feedback.
-- [ ] Verify `install.sh` succeeds against a fresh temp directory after publishing.
-- [ ] Verify `install-tools.sh` succeeds against a fresh `$HOME/.claude` after publishing (skills/agents may be empty in early phases).
+- [x] Set repository description: "AI-augmented SDLC playbook for shipping software with specs, standards, roadmaps, agents, and retrospectives."
+- [x] Add topics: `sdlc`, `ai-assisted-development`, `developer-workflow`, `claude-code`, `templates`, `software-engineering`.
+- [x] Confirm default branch is `main`.
+- [x] Enable issues and discussions if maintainers want public feedback.
+- [x] Verify `install.sh` succeeds against a fresh temp directory after publishing.
+- [x] Verify `install-tools.sh` succeeds against a fresh `$HOME/.claude` after publishing (skills/agents may be empty in early phases).
 
 ## Safety
 
 - [ ] Run `rtk git diff --check`.
 - [ ] Run `rtk rg -n "secret|token|password|api_key|private[_-]?key|/home/|~/.claude" .`.
-- [ ] Review [SECURITY.md](SECURITY.md) and enable GitHub private vulnerability reporting if available.
+- [x] Review [SECURITY.md](SECURITY.md) and enable GitHub private vulnerability reporting if available.
 - [ ] Confirm no private names, customer references, credentials, local paths, or screenshots are committed.
 
 ## Maintainer workflow
