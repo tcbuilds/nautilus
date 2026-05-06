@@ -6,6 +6,8 @@ Per-language pattern files that extend the cross-language baseline in `../coding
 
 Each project picks **one** file matching its primary language and copies it into `.claude/rules/` at the project root. Claude Code auto-loads anything in `.claude/rules/` as part of project context, so the patterns become persistent guidance without needing to be invoked.
 
+Each file uses YAML `paths:` frontmatter so it only enters context when Claude reads matching files — keeps token usage down in polyglot repos.
+
 These files pair with `templates/codingStandards.md` — the cross-language baseline that is copied to the project root. The baseline covers universal rules (no swallowed errors, no unbounded queues, secrets hygiene). The language file covers idioms specific to the chosen language.
 
 ## Available files

@@ -15,7 +15,7 @@ Run these checks locally:
 
 ```bash
 rtk git diff --check
-rtk rg -n "secret|token|password|api_key|private|/home/|~/.claude" .
+rtk rg -n "secret|token|password|api_key|private[_-]?key|/home/|~/.claude" .
 ```
 
 Preview edited Markdown and verify relative links. If a change affects a template, copy the template mentally into a new project and confirm the instructions still make sense outside this repo.

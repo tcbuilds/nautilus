@@ -1,3 +1,10 @@
+---
+paths:
+  - "**/*.rs"
+  - "Cargo.toml"
+  - "Cargo.lock"
+---
+
 # Rust Patterns — Project Development Rules
 
 Assumes Rust 1.80+ / edition 2021.

@@ -14,7 +14,7 @@ Use this before making the repository public.
 ## Safety
 
 - [ ] Run `rtk git diff --check`.
-- [ ] Run `rtk rg -n "secret|token|password|api_key|private|/home/|~/.claude" .`.
+- [ ] Run `rtk rg -n "secret|token|password|api_key|private[_-]?key|/home/|~/.claude" .`.
 - [ ] Review [SECURITY.md](SECURITY.md) and enable GitHub private vulnerability reporting if available.
 - [ ] Confirm no private names, customer references, credentials, local paths, or screenshots are committed.
 

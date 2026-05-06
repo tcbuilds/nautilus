@@ -1,3 +1,13 @@
+---
+paths:
+  - "**/*.py"
+  - "**/*.pyi"
+  - "pyproject.toml"
+  - "setup.py"
+  - "setup.cfg"
+  - "requirements*.txt"
+---
+
 # Python Patterns — Project Development Rules
 
 Project-specific Python idioms and constraints. Copy into `.claude/rules/` of any new project, then trim or extend per project needs. Pairs with the cross-language `../codingStandards.md` baseline.

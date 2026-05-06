@@ -1,3 +1,13 @@
+---
+paths:
+  - "**/*.ts"
+  - "**/*.tsx"
+  - "**/*.cts"
+  - "**/*.mts"
+  - "tsconfig*.json"
+  - "package.json"
+---
+
 # TypeScript Patterns — Project Development Rules
 
 Project-specific TypeScript idioms and constraints. Copy into `.claude/rules/` of any new project, then trim or extend per project needs. Pairs with the cross-language `../codingStandards.md` baseline.

@@ -9,4 +9,6 @@ Quick reference for the specialized Claude Code agents most relevant to the naut
 | `python-core-engineer` | Core Python infrastructure, asyncio, design patterns, refactoring. | Architecting backend modules, async/concurrent code, structural Python work. |
 | `performance-optimizer` | Profiling, bottleneck identification, latency reduction. | Slow code, hot paths, throughput problems, "make this faster" requests. |
 
+> Phase 1 of the playbook ships framing only. This index and the per-agent detail files under `agents/` will populate as artifacts mature and earn their place across multiple projects.
+
 The full agent list lives in the user's global `CLAUDE.md`. This index intentionally stays short and focused on the workflow-critical specialists. Per-agent detail files live under `agents/` as they get documented.

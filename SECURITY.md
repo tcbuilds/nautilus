@@ -22,5 +22,5 @@ Do not commit credentials, API keys, private hostnames, customer names, personal
 Before publishing a change, search for common leakage patterns:
 
 ```bash
-rtk rg -n "secret|token|password|api_key|private|/home/|~/.claude" .
+rtk rg -n "secret|token|password|api_key|private[_-]?key|/home/|~/.claude" .
 ```

@@ -17,6 +17,9 @@ jobs:
       - name: Check whitespace
         run: git diff --check
 
+      - name: Install ripgrep
+        run: sudo apt-get update -y && sudo apt-get install -y ripgrep
+
       - name: Check sensitive patterns
         run: |
           ! rg -n "BEGIN (RSA|OPENSSH|PRIVATE) KEY|AKIA[0-9A-Z]{16}|api[_-]?key\\s*[:=]|password\\s*[:=]|secret\\s*[:=]|(^|[^[:alnum:]_-])token\\s*[:=]" .
