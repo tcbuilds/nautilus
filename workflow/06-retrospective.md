@@ -49,7 +49,7 @@ Concrete next experiments. New skill to build, new agent pattern to try, new che
 
 ## Feed the playbook
 
-Every retro is an input to nautilus. If a skill, agent, template, or rule earns its place across multiple projects, promote it via `/nautilus-sync` (Phase 5). If a rule fails repeatedly, retire it. The playbook reflects what works in practice — not what was speculated up front.
+Every retro is an input to nautilus. If a skill, agent, template, or rule earns its place across multiple projects, promote it via `/nautilus-sync` (Phase 7). If a rule fails repeatedly, retire it. The playbook reflects what works in practice — not what was speculated up front.
 
 ## Exit criteria
 

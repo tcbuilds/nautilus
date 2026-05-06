@@ -1,4 +1,4 @@
-# Phase 5 — Maintaining the Playbook
+# Phase 7 — Maintaining the Playbook
 
 The playbook is a living asset. As skills and agents mature through real project use, the playbook should reflect what actually works — not what was speculated up front.
 

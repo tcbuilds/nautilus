@@ -1,4 +1,4 @@
-# Phase 4.8 — Incident Response (Solo Edition)
+# Phase 5 — Incident Response (Solo Edition)
 
 When something breaks in production, this is the playbook. Solo edition: no Incident Commander handoffs, no separate Comms Lead. You wear all the hats. The discipline is in the artifacts you leave behind.
 

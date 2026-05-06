@@ -15,9 +15,9 @@ AI-assisted development is still software development. Nautilus makes that visib
 3. **[Init](workflow/02-init.md)** — `/init` generates a project-level `CLAUDE.md` rooted in the standards.
 4. **[Roadmap](workflow/03-roadmap.md)** — `/roadmap` produces `implementation_plan.md` with phased checkboxes.
 5. **[Build](workflow/04-build.md)** — `/build` dispatches specialized agents to execute the plan.
-6. **[Incident Response](workflow/04.8-incident-response.md)** — Severity ladder, mitigation discipline, and blameless postmortems for when production breaks.
+6. **[Incident Response](workflow/05-incident-response.md)** — Severity ladder, mitigation discipline, and blameless postmortems for when production breaks.
 7. **[Retrospective](workflow/06-retrospective.md)** — Per-phase and end-of-project retros with a DORA scoreboard, feeding lessons back into the playbook.
-8. **[Maintaining the Playbook](workflow/08-maintaining-the-playbook.md)** — `/nautilus-sync` promotes mature skills and agents into this repo with sanitization.
+8. **[Maintaining the Playbook](workflow/07-maintaining-the-playbook.md)** — `/nautilus-sync` promotes mature skills and agents into this repo with sanitization.
 
 ## Cross-cutting
 
@@ -128,9 +128,9 @@ nautilus/
 │   ├── 02-init.md
 │   ├── 03-roadmap.md
 │   ├── 04-build.md
-│   ├── 04.8-incident-response.md
+│   ├── 05-incident-response.md
 │   ├── 06-retrospective.md
-│   └── 08-maintaining-the-playbook.md
+│   └── 07-maintaining-the-playbook.md
 ├── templates/
 │   ├── codingStandards.md
 │   ├── language-rules/
