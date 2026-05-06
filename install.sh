@@ -137,8 +137,12 @@ fi
 
 command -v tar >/dev/null 2>&1 || err "need tar on PATH"
 
-# Verify destination exists.
-[ -d "$DEST" ] || err "destination does not exist: $DEST"
+# Create destination if missing; verify it is a directory (not a file).
+# Greenfield use case: `install.sh --dest ./my-new-project` should bootstrap
+# a fresh project, not error out. Later code already does mkdir -p on the
+# nested .claude/rules/ path, so refusing here was inconsistent.
+mkdir -p "$DEST" || err "could not create destination: $DEST"
+[ -d "$DEST" ] || err "destination is not a directory: $DEST"
 
 # Resolve target paths up front for the conflict pre-flight.
 TARGET_STANDARDS="$DEST/codingStandards.md"
