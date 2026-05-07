@@ -11,6 +11,8 @@ secrets/
 # Build artifacts and caches
 dist/
 build/
+# Allow the /build skill directory under skills/
+!skills/build/
 coverage/
 __pycache__/
 *.pyc
