@@ -4,6 +4,51 @@ These standards exist to prevent slop, slow code, hidden coupling, and hard-to-d
 
 For per-language pattern files (Rust, Python, TypeScript) that extend this baseline with idioms and constraints specific to a single language, see `language-rules/`. Each project copies one file from there into `.claude/rules/` so Claude Code auto-loads it alongside this baseline.
 
+## Code Behavior (4 rules)
+
+These four behavioral rules prevent the most common LLM coding failures: scope creep, premature abstraction, unrequested refactoring, and goal-less execution. Apply to every implementation task.
+
+### 1. Think Before Coding
+State assumptions explicitly. If uncertain, ask. If multiple interpretations exist, present them — don't pick silently. If a simpler approach exists, say so. Push back when warranted. If something is unclear, stop, name what's confusing, and ask.
+
+### 2. Simplicity First
+Minimum code that solves the problem. Nothing speculative.
+- No features beyond what was asked
+- No abstractions for single-use code
+- No "flexibility" or "configurability" that wasn't requested
+- No error handling for impossible scenarios
+- If you write 200 lines and it could be 50, rewrite it
+
+Test: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+
+### 3. Surgical Changes
+Touch only what you must. Clean up only your own mess.
+- Don't "improve" adjacent code, comments, or formatting
+- Don't refactor things that aren't broken
+- Match existing style, even if you'd do it differently
+- If you notice unrelated dead code, mention it — don't delete it
+- Remove imports/variables/functions that YOUR changes made unused; leave pre-existing dead code alone
+
+Test: every changed line should trace directly to the user's request.
+
+### 4. Goal-Driven Execution
+Transform tasks into verifiable goals:
+- "Add validation" → "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" → "Write a test that reproduces it, then make it pass"
+- "Refactor X" → "Ensure tests pass before and after"
+
+For multi-step tasks, state a brief plan:
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+```
+
+Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+> **Source:** Rules 1–4 adapted from [forrestchang/andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) — Karpathy-derived behavioral guidelines.
+
+---
+
 ## Core Principles
 
 1. Correctness beats cleverness.
