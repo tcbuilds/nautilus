@@ -283,7 +283,6 @@ If unsure whether a change is structural or behavioral, ask the user before comm
 - Task needs API keys or credentials not in .env or .env.example
 - Task has conflicting instructions with another task or CLAUDE.md
 - Agent returned BLOCKED status
-- A phase has more than 10 tasks (confirm batch execution)
 
 **Continue automatically when:**
 - Task is clear and all inputs are available
