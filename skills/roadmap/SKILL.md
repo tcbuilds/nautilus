@@ -23,6 +23,8 @@ If a task doesn't trace to one of those three, it's slop. Common slop patterns t
 - "Set up Dependabot / Renovate" — add only when the spec calls for security posture or dependency rot is an actual concern.
 - "Add Storybook" / "Add Sentry" / "Add OpenTelemetry" — add only when the spec or a real failure asks for it.
 - "Add monitoring / alerting" — load-bearing for production services, slop for local-first tools.
+- "Add compliance process" — add only when the project handles controlled data, customer confidential data, production access, enterprise delivery, or an explicit audit/security requirement.
+- "Run every audit skill" — slop unless the project shape calls for it. Pick the narrow gate that controls the actual risk.
 
 **Default to less.** A 50-task plan that ships beats a 200-task plan that suffocates. If you're unsure whether a task belongs, ask the user instead of emitting it.
 
@@ -43,10 +45,21 @@ Before writing the plan, identify the project shape. Use AskUserQuestion if the 
 
 - **Solo private-to-public OSS tool** (one dev, no MR/PR review, ships when ready): skip CI-on-MR/PR, skip pre-commit, skip branch protection. Keep distribution + eval + anti-goal guards if the spec calls for them.
 - **Team SaaS / production service**: CI, branch protection, monitoring, alerting are load-bearing. Include them.
+- **Enterprise / compliance-sensitive repo**: include only the governance gates that match the data and delivery risk: data classification, ADR/risk register, hardening audit, secure code review, release readiness, and MR/pipeline evidence.
 - **Internal tool / script**: minimal scaffolding. Skip almost all infra tasks.
 - **Library / SDK published to a registry**: include release automation, version tagging, changelog discipline. Skip deploy/infra.
 
 The shape determines which "best practice" tasks are real commitments vs. ritual.
+
+## Platform language
+
+Detect the repository host before writing process tasks:
+
+- GitLab repo: use merge request, pipeline, protected branch, approval rule, environment, project, and group.
+- GitHub repo: use pull request, Actions, branch protection, environment, and repository.
+- Unknown or platform-neutral: use MR/PR and CI pipeline.
+
+Do not generate GitHub Actions tasks for GitLab repositories. Do not generate GitLab CI tasks for GitHub repositories unless the repo already uses that pattern.
 
 ## Instructions
 
@@ -54,6 +67,7 @@ The shape determines which "best practice" tasks are real commitments vs. ritual
    - Read the spec file(s) the user points at (mvp.md, prd.md, brief.md). If none exists, ask.
    - Read CLAUDE.md and any standards docs (codingStandards.md) for project-specific rules.
    - Identify project shape (see above). If ambiguous, ask before generating.
+   - Identify platform shape (GitLab, GitHub, other, unknown) from remotes and existing CI files.
    - Generate the plan: every task traces to spec / user intent / known failure.
    - Use Markdown task checkboxes: `- [ ]` for incomplete, `- [x]` for complete.
    - End the plan with a short `## Deferred / Out of scope` section listing notable things you considered and *intentionally* did not include — this makes scope decisions auditable.
@@ -69,6 +83,7 @@ The shape determines which "best practice" tasks are real commitments vs. ritual
    - Priority indicators where relevant (High, Medium, Low).
    - Estimated effort only when the spec or user has anchored a timeline.
    - Links to related spec sections, files, or issues — task-to-source traceability.
+   - Review gates only where they control real risk. For secure-delivery projects, prefer explicit gates such as `/data-classification`, `/secure-code-review`, `/codex-review`, `/hardening-audit`, and `/release-readiness` at the milestone where their evidence is needed.
 
 4. **Example format** (deliberately minimal — do NOT pad with infra unless the spec requires it):
 
@@ -92,3 +107,25 @@ The shape determines which "best practice" tasks are real commitments vs. ritual
 ```
 
 Notice the example does **not** include "Set up CI/CD pipeline" or "pre-commit hooks." Those are only added when a spec line or explicit user request demands them.
+
+## Secure-delivery example
+
+For an enterprise or compliance-sensitive repo, add gates only where risk requires them:
+
+```markdown
+## M0 — Delivery controls
+- [ ] Classify project data flows with `/data-classification` before implementing storage, logging, prompts, or integrations.
+- [ ] Record ADR for auth, storage, deployment, or LLM/MCP decisions that are hard to reverse.
+
+## M1 — Feature slice
+- [ ] {feature from spec §X}
+  - [ ] Implement behavior end-to-end.
+  - [ ] Add tests for accepted and rejected paths.
+  - [ ] Run `/codex-review` on changed files before marking complete.
+
+## Release gate
+- [ ] Run `/hardening-audit` for production, auth, API, LLM, MCP, or infrastructure changes.
+- [ ] Run `/release-readiness` before merge/deploy/customer delivery.
+```
+
+If the project does not handle sensitive data, production access, or customer-facing delivery, defer these gates rather than adding them by default.
