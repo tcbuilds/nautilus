@@ -51,6 +51,26 @@ Before writing the plan, identify the project shape. Use AskUserQuestion if the 
 
 The shape determines which "best practice" tasks are real commitments vs. ritual.
 
+## Repo-first discovery
+
+Before adding any process, tooling, CI, testing, formatting, security, deployment, or release task, inspect how the current repo already works. Existing repo evidence beats generic preference.
+
+Check for:
+
+- Platform and workflow: `git remote -v`, `.gitlab-ci.yml`, `.github/workflows/`, merge/pull request templates, CODEOWNERS.
+- Project commands: README, Makefile, package scripts, pyproject, Cargo.toml, justfile, taskfile, tox, nox.
+- Existing quality gates: test commands, lint/typecheck commands, coverage config, security scans, dependency checks.
+- Existing docs: CLAUDE.md, AGENTS.md, codingStandards.md, CONTRIBUTING.md, SECURITY.md, ADRs, runbooks.
+- Existing architecture: source directories, tests, migrations, deployment manifests, Dockerfiles, infra files.
+
+Planning rules:
+
+- If the repo already has a gate, use that gate by name instead of proposing a new tool.
+- If the repo has no evidence for a tool, do not add it unless the spec, user intent, or known failure requires it.
+- If the repo has a lightweight manual workflow that fits the project shape, preserve it.
+- If a stronger gate is genuinely required, explain the repo evidence and the risk that justifies adding it.
+- If discovery is inconclusive, ask one focused question instead of filling the plan with generic setup tasks.
+
 ## Platform language
 
 Detect the repository host before writing process tasks:
@@ -66,6 +86,7 @@ Do not generate GitHub Actions tasks for GitLab repositories. Do not generate Gi
 1. **If implementation_plan.md doesn't exist:**
    - Read the spec file(s) the user points at (mvp.md, prd.md, brief.md). If none exists, ask.
    - Read CLAUDE.md and any standards docs (codingStandards.md) for project-specific rules.
+   - Run repo-first discovery and summarize existing commands, gates, platform, and docs before planning.
    - Identify project shape (see above). If ambiguous, ask before generating.
    - Identify platform shape (GitLab, GitHub, other, unknown) from remotes and existing CI files.
    - Generate the plan: every task traces to spec / user intent / known failure.
