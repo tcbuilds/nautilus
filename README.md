@@ -26,7 +26,7 @@ AI-assisted development is still software development. Nautilus makes that visib
 ## Cross-cutting
 
 - **[Token Economy](token-economy.md)** — `caveman` mode and `rtk` cut token spend across every phase. Foundational infrastructure for any long-running Claude Code workflow.
-- **[GovCon Pack](GOVCON_PACK.md)** — skills and agent roles for regulated or public-sector-adjacent delivery.
+- **[Secure Delivery Pack](SECURE_DELIVERY_PACK.md)** — skills, templates, and agent roles for enterprise or compliance-sensitive delivery.
 
 ## Quickstart
 
@@ -125,7 +125,7 @@ nautilus/
 ├── SECURITY.md                     # vulnerability and sensitive-data reporting
 ├── CODE_OF_CONDUCT.md
 ├── LICENSE
-├── GOVCON_PACK.md
+├── SECURE_DELIVERY_PACK.md
 ├── OPEN_SOURCE_CHECKLIST.md
 ├── CLAUDE.md                       # repo-level orchestrator instructions
 ├── workflow/
@@ -139,6 +139,8 @@ nautilus/
 │   └── 07-maintaining-the-playbook.md
 ├── templates/
 │   ├── codingStandards.md
+│   ├── CLAUDE.secure-delivery-template.md
+│   ├── AGENTS.secure-delivery-template.md
 │   ├── language-rules/
 │   │   ├── README.md
 │   │   ├── rust-patterns.md

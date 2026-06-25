@@ -23,7 +23,7 @@ Use on PRs, large diffs, auth changes, API endpoints, file parsers, deployment s
 - Dependency, container, and CI supply-chain risk
 - Unsafe deserialization or dynamic code execution
 - Missing timeouts, rate limits, or resource bounds
-- PII/CUI/regulated data exposure
+- PII, controlled data, or regulated data exposure
 - LLM prompt injection and unsafe MCP/tool invocation
 
 ## Finding format

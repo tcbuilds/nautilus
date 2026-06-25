@@ -1,6 +1,6 @@
 ---
 name: data-classification
-description: Classify project data flows and repositories for sensitive data handling. Use for CUI, PII, PHI, secrets, export-controlled data, customer confidential data, logs, telemetry, and retention questions. Produces data_classification.md.
+description: Classify project data flows and repositories for sensitive data handling. Use for controlled data, PII, PHI, secrets, export-controlled data, customer confidential data, logs, telemetry, and retention questions. Produces data_classification.md.
 ---
 
 # Data Classification

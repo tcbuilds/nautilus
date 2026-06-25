@@ -1,6 +1,6 @@
 ---
 name: compliance-review
-description: Review a project for public-sector and regulated-environment readiness. Use for NIST 800-171, CMMC, FedRAMP-style control awareness, audit evidence, SSP/POA&M preparation, and governance gaps. Produces compliance_report.md with findings, evidence, and next actions.
+description: Review a project for enterprise or regulated-environment readiness. Use for control awareness, audit evidence, policy mapping, SSP/POA&M-style preparation, and governance gaps. Produces compliance_report.md with findings, evidence, and next actions.
 ---
 
 # Compliance Review
@@ -9,7 +9,7 @@ Review a repository for compliance readiness without claiming certification or r
 
 ## When to invoke
 
-Use when preparing software for regulated work, public-sector delivery, customer security review, CUI/PII handling, or an internal audit.
+Use when preparing software for enterprise delivery, regulated work, customer security review, controlled/PII data handling, or an internal audit.
 
 ## Process
 
@@ -50,5 +50,5 @@ Each finding must include:
 
 - Do not state that a system is "compliant" or "certified".
 - Do not include secrets, private customer names, internal hostnames, or controlled data in the report.
-- If CUI, export-controlled data, health data, financial data, or minors' data may be involved, flag for human owner review.
+- If controlled, export-controlled, health, financial, or minors' data may be involved, flag for human owner review.
 - Treat missing evidence as a gap, not proof of failure.

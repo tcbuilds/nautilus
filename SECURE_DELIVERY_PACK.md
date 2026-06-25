@@ -1,14 +1,14 @@
-# Nautilus GovCon Pack
+# Secure Delivery Pack
 
-This pack is a small, public-safe set of skills and agent roles for AI-augmented software work in regulated or public-sector-adjacent environments.
+This pack is a small, public-safe set of skills, templates, and agent roles for AI-augmented software work in enterprise or compliance-sensitive repositories.
 
 ## Install
 
-Install the GovCon-oriented skills and agent roles:
+Install the secure-delivery skills and agent roles:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
-  --skills refine-spec,roadmap,build,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
+  --skills refine-spec,roadmap,build,codex-review,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
   --agents git-platform-engineer,repo-investigator,security-reviewer,test-engineer,technical-writer,compliance-reviewer
 ```
 
@@ -23,12 +23,18 @@ curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tool
 - `/refine-spec` - turns rough requirements into auditable specs.
 - `/roadmap` - creates traceable implementation plans.
 - `/build` - executes planned tasks through specialized agents.
+- `/codex-review` - runs a second-pass Codex review and blocks Critical/High findings.
 - `/hardening-audit` - checks production, LLM, MCP, API, and infrastructure hardening.
-- `/compliance-review` - maps evidence and gaps for regulated-environment readiness.
+- `/compliance-review` - maps evidence and gaps for enterprise or regulated-environment readiness.
 - `/data-classification` - identifies sensitive data and handling rules.
 - `/secure-code-review` - reviews code for exploitable security defects.
 - `/release-readiness` - creates go/no-go evidence before merge or deploy.
 - `/adr-risk-register` - records decisions, tradeoffs, risks, and owners.
+
+## Recommended templates
+
+- `templates/CLAUDE.secure-delivery-template.md` - Claude Code project guidance for enterprise or compliance-sensitive repositories.
+- `templates/AGENTS.secure-delivery-template.md` - Codex/agent guidance for enterprise or compliance-sensitive repositories.
 
 ## Recommended agent roles
 
@@ -41,7 +47,7 @@ curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tool
 
 ## GitLab note
 
-For GitLab environments, use `git-platform-engineer`, not `github-master`. The `github-master` agent remains available for GitHub-hosted repositories and GitHub-specific features, but GovCon pack guidance should use platform-neutral language unless the repository is actually on GitHub.
+For GitLab environments, use `git-platform-engineer`, not `github-master`. The `github-master` agent remains available for GitHub-hosted repositories and GitHub-specific features, but secure-delivery guidance should use platform-neutral language unless the repository is actually on GitHub.
 
 ## Guardrails
 

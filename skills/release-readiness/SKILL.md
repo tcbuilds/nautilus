@@ -1,6 +1,6 @@
 ---
 name: release-readiness
-description: Run a pre-merge or pre-deploy release readiness check. Use before shipping production changes, public releases, regulated-environment deliveries, or customer-facing milestones. Produces release_readiness.md.
+description: Run a pre-merge or pre-deploy release readiness check. Use before shipping production changes, public releases, enterprise deliveries, compliance-sensitive releases, or customer-facing milestones. Produces release_readiness.md.
 ---
 
 # Release Readiness
