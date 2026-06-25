@@ -225,7 +225,9 @@ for F in "$SRC_AGENTS"/*.md; do
 done
 
 # Resolve skill selection.
-if [ -z "$SKILLS_INPUT" ] || [ "$SKILLS_INPUT" = "all" ]; then
+if [ "$SKILLS_INPUT" = "none" ]; then
+	SELECTED_SKILLS=""
+elif [ -z "$SKILLS_INPUT" ] || [ "$SKILLS_INPUT" = "all" ]; then
 	SELECTED_SKILLS="$AVAILABLE_SKILLS"
 else
 	SELECTED_SKILLS=""
@@ -255,7 +257,9 @@ else
 fi
 
 # Resolve agent selection.
-if [ -z "$AGENTS_INPUT" ] || [ "$AGENTS_INPUT" = "all" ]; then
+if [ "$AGENTS_INPUT" = "none" ]; then
+	SELECTED_AGENTS=""
+elif [ -z "$AGENTS_INPUT" ] || [ "$AGENTS_INPUT" = "all" ]; then
 	SELECTED_AGENTS="$AVAILABLE_AGENTS"
 else
 	SELECTED_AGENTS=""

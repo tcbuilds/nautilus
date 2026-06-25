@@ -57,7 +57,7 @@ python3 ~/.claude/skills/nautilus-sync/scripts/sanitize.py \
   < <source-file> > /tmp/nautilus-sync.sanitized 2> /tmp/nautilus-sync.stats
 ```
 
-Stats line entries look like `path: 4`, `identity: 2`, `api_key: 1`, etc.
+Stats line entries look like `path: 4`, `identity: 2`, `credential material: 1`, etc.
 
 For binary files inside a skill (rare — usually images), copy them as-is without sanitization.
 
