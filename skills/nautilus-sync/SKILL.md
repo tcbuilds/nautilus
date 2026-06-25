@@ -16,7 +16,7 @@ Bridge a personal skill (`~/.claude/skills/<name>/`) or agent (`~/.claude/agents
 /nautilus-sync skill <name> --repo /path/to/nautilus
 ```
 
-Natural-language equivalents trigger the same flow ("sync the github-master agent to my nautilus repo", "promote backlink-builder to the playbook").
+Natural-language equivalents trigger the same flow ("sync the git-platform-engineer agent to my nautilus repo", "promote backlink-builder to the playbook").
 
 ## Target repo resolution
 

@@ -85,7 +85,7 @@ Filter by name or opt out of clobbering:
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- --skills refine-spec,build
 
 # Specific agents only
-curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- --agents github-master
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- --agents git-platform-engineer
 
 # Refuse to overwrite anything that already exists in ~/.claude/
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- --no-overwrite

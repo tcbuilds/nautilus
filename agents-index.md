@@ -4,7 +4,8 @@ Quick reference for the specialized Claude Code agents most relevant to the naut
 
 | Agent | Specialization | When to delegate |
 |---|---|---|
-| `github-master` | Git operations, GitHub Actions, CI/CD, branch protection, repo lifecycle. | Repo setup, releases, branch protection rules, workflow files, anything involving `gh` or `git` at scale. |
+| `git-platform-engineer` | GitLab, GitHub, and generic Git repository operations, CI/CD, branch protection, and release workflows. | Default repo-ops agent, especially when the host may be GitLab or the work needs platform-neutral language. |
+| `github-master` | GitHub-specific operations, GitHub Actions, GitHub security features, and `gh` workflows. | Use only for GitHub-hosted repos or tasks that explicitly require GitHub platform features. |
 | `Explore` | Fast codebase search and orientation. (Claude Code built-in, not shipped here.) | "Where is X?" / "How does Y work?" questions. First stop when entering an unfamiliar repo. |
 | `repo-investigator` | Read-only repository orientation and subsystem mapping. | Use before implementation in unfamiliar codebases or regulated environments where traceability matters. |
 | `security-reviewer` | Security-focused code, architecture, MCP/tooling, CI, and deployment review. | Auth, data exposure, injection, secrets, supply-chain, and agent-tool risk reviews. |

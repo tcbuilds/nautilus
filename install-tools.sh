@@ -65,7 +65,7 @@ Options:
 Examples:
   install-tools.sh
   install-tools.sh --skills refine-spec,build
-  install-tools.sh --agents github-master --no-overwrite
+  install-tools.sh --agents git-platform-engineer --no-overwrite
   install-tools.sh --dest /tmp/fresh-claude --ref v1.0.0
 EOF
 }

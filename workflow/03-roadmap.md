@@ -8,7 +8,7 @@ The `/roadmap` skill, against the refined `mvp.md` or `idea.md`.
 
 ## Output
 
-`implementation_plan.md` at the project root. GitHub-style markdown checkboxes, organized into phases.
+`implementation_plan.md` at the project root. Markdown task checkboxes, organized into phases.
 
 ## Phase 0 of the roadmap is always foundational
 

@@ -1,11 +1,11 @@
 ---
 name: roadmap
-description: Create or update implementation_plan.md with GitHub-style task checkboxes. Use when asked to "plan the project", "create a task list", "what needs to be done", or "organize implementation steps".
+description: Create or update implementation_plan.md with Markdown task checkboxes. Use when asked to "plan the project", "create a task list", "what needs to be done", or "organize implementation steps".
 ---
 
 # Implementation Plan Manager
 
-Create or update an `implementation_plan.md` file with GitHub-style markdown checkboxes for tracking project tasks.
+Create or update an `implementation_plan.md` file with Markdown task checkboxes for tracking project tasks.
 
 ## Anti-slop rules (read first)
 
@@ -17,9 +17,9 @@ A roadmap is a list of *commitments*, not a list of best-practice rituals. Every
 
 If a task doesn't trace to one of those three, it's slop. Common slop patterns to **NOT emit by default**:
 
-- "Set up CI/CD pipeline" — only if the spec requires CI as the venue for something specific (eval harness, anti-goal enforcement, team gating). A solo dev who runs gates manually does not need GitHub Actions on PR.
+- "Set up CI/CD pipeline" — only if the spec requires CI as the venue for something specific (eval harness, anti-goal enforcement, team gating). A solo dev who runs gates manually does not need CI on every merge request or pull request.
 - "Add pre-commit hooks" / "husky" / "lint-staged" — friction without payoff for solo projects. Add only when a collaborator-shaped failure has happened (someone pushed broken code).
-- "Branch protection on main" — theater on a solo repo. Add only when collaborators land or PR review becomes a real workflow.
+- "Branch protection on main" — theater on a solo repo. Add only when collaborators land or MR/PR review becomes a real workflow.
 - "Set up Dependabot / Renovate" — add only when the spec calls for security posture or dependency rot is an actual concern.
 - "Add Storybook" / "Add Sentry" / "Add OpenTelemetry" — add only when the spec or a real failure asks for it.
 - "Add monitoring / alerting" — load-bearing for production services, slop for local-first tools.
@@ -41,7 +41,7 @@ If the task is too big to ship in 2 days, split it into thinner vertical slices,
 
 Before writing the plan, identify the project shape. Use AskUserQuestion if the answer isn't obvious from the codebase + spec:
 
-- **Solo private→public OSS tool** (one dev, no PR review, ships when ready): skip CI-on-PR, skip pre-commit, skip branch protection. Keep distribution + eval + anti-goal guards if the spec calls for them.
+- **Solo private-to-public OSS tool** (one dev, no MR/PR review, ships when ready): skip CI-on-MR/PR, skip pre-commit, skip branch protection. Keep distribution + eval + anti-goal guards if the spec calls for them.
 - **Team SaaS / production service**: CI, branch protection, monitoring, alerting are load-bearing. Include them.
 - **Internal tool / script**: minimal scaffolding. Skip almost all infra tasks.
 - **Library / SDK published to a registry**: include release automation, version tagging, changelog discipline. Skip deploy/infra.
@@ -55,7 +55,7 @@ The shape determines which "best practice" tasks are real commitments vs. ritual
    - Read CLAUDE.md and any standards docs (codingStandards.md) for project-specific rules.
    - Identify project shape (see above). If ambiguous, ask before generating.
    - Generate the plan: every task traces to spec / user intent / known failure.
-   - Use GitHub-style checkboxes: `- [ ]` for incomplete, `- [x]` for complete.
+   - Use Markdown task checkboxes: `- [ ]` for incomplete, `- [x]` for complete.
    - End the plan with a short `## Deferred / Out of scope` section listing notable things you considered and *intentionally* did not include — this makes scope decisions auditable.
 
 2. **If implementation_plan.md already exists:**
@@ -86,7 +86,7 @@ The shape determines which "best practice" tasks are real commitments vs. ritual
 - [ ] Tests covering critical paths (per spec §testing)
 
 ## Deferred / Out of scope (this iteration)
-- CI on PR — solo dev, manual gates suffice for now
+- CI on MR/PR — solo dev, manual gates suffice for now
 - Branch protection — no collaborators yet
 - {anything else considered and dropped}
 ```

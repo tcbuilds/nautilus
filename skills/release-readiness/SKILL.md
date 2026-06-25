@@ -9,7 +9,7 @@ Create a concrete go/no-go checklist for a release. Focus on evidence, rollback,
 
 ## When to invoke
 
-Use before merging a large PR, tagging a release, deploying to production, publishing an open-source repo, or delivering to a customer environment.
+Use before merging a large merge request or pull request, tagging a release, deploying to production, publishing an open-source repo, or delivering to a customer environment.
 
 ## Process
 

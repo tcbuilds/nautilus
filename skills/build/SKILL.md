@@ -47,7 +47,7 @@ Match task description keywords against this routing table. NEVER default to `ge
 | research API, find SDK, explore library, documentation lookup | `api-docs-discovery` |
 | HTTP API, REST client, rate limiting, pagination, third-party integration | `dex-api-integration` |
 | WebSocket, real-time stream, event feed, WS connection | `websocket-dex-specialist` |
-| git, GitHub, CI/CD, Actions, workflow, branch protection, PR, release | `github-master` |
+| git, GitLab, GitHub, CI/CD, pipeline, workflow, branch protection, MR, PR, merge request, pull request, release | `git-platform-engineer` |
 | performance, optimize, profile, bottleneck, latency, benchmark, cache | `performance-optimizer` |
 | linux, server, systemd, nginx, deploy, infrastructure, monitoring, SRE | `linux-sre-master` |
 | venv, pip, poetry, conda, dependencies, requirements.txt, package install | `python-env-manager` |

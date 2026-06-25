@@ -12,7 +12,7 @@ Top-level Claude Code remains an orchestrator. It does not write code, run comma
 
 - Python core work → `python-core-engineer`
 - Performance work → `performance-optimizer`
-- Git/CI/repo ops → `github-master`
+- Git/CI/repo ops → `git-platform-engineer` (use `github-master` only for GitHub-specific work)
 - Codebase exploration → `Explore`
 - Network/connectivity issues → `network-diagnostics`
 - And so on — see `agents-index.md` and the global agent list.

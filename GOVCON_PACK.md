@@ -9,7 +9,7 @@ Install the GovCon-oriented skills and agent roles:
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
   --skills refine-spec,roadmap,build,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
-  --agents repo-investigator,security-reviewer,test-engineer,technical-writer,compliance-reviewer
+  --agents git-platform-engineer,repo-investigator,security-reviewer,test-engineer,technical-writer,compliance-reviewer
 ```
 
 Install all Nautilus tools:
@@ -37,6 +37,11 @@ curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tool
 - Test engineer: regression coverage and verification.
 - Technical writer: user-facing and audit-facing documentation.
 - Compliance reviewer: control evidence, POA&M candidates, and governance gaps.
+- Git platform engineer: GitLab/GitHub-neutral repo, CI/CD, merge request, and release operations.
+
+## GitLab note
+
+For GitLab environments, use `git-platform-engineer`, not `github-master`. The `github-master` agent remains available for GitHub-hosted repositories and GitHub-specific features, but GovCon pack guidance should use platform-neutral language unless the repository is actually on GitHub.
 
 ## Guardrails
 
