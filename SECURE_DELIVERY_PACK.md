@@ -8,7 +8,7 @@ Install the secure-delivery skills and agent roles:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
-  --skills warmup,refine-spec,roadmap,build,repo-orientation,codex-review,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
+  --skills warmup,handoff,refine-spec,roadmap,build,repo-orientation,codex-review,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
   --agents git-platform-engineer,repo-investigator,security-reviewer,test-engineer,technical-writer,compliance-reviewer
 ```
 
@@ -22,6 +22,7 @@ curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tool
 
 - `/refine-spec` - turns rough requirements into auditable specs.
 - `/warmup` - loads repo-local rules, recent history, current state, and safe next steps.
+- `/handoff` - writes resume state, validation, risks, and next steps for future sessions.
 - `/roadmap` - creates traceable implementation plans.
 - `/build` - executes planned tasks through specialized agents.
 - `/repo-orientation` - creates onboarding-quality repo breakdowns for shared codebases.
