@@ -9,7 +9,7 @@ Install the secure-delivery skills and agent roles:
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
   --skills warmup,handoff,refine-spec,roadmap,build,repo-orientation,codex-review,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
-  --agents git-platform-engineer,repo-investigator,security-reviewer,test-engineer,technical-writer,compliance-reviewer
+  --agents git-platform-engineer,repo-investigator,security-reviewer,test-engineer,technical-writer,compliance-reviewer,python-core-engineer,typescript-core-engineer,rust-systems-engineer,sql-state-architect,linux-sre-master,network-diagnostics,performance-optimizer
 ```
 
 Install all Nautilus tools:
@@ -47,6 +47,13 @@ curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tool
 - Technical writer: user-facing and audit-facing documentation.
 - Compliance reviewer: control evidence, POA&M candidates, and governance gaps.
 - Git platform engineer: GitLab/GitHub-neutral repo, CI/CD, merge request, and release operations.
+- Python core engineer: Python services, scripts, async code, and backend modules.
+- TypeScript core engineer: TypeScript/JavaScript, frontend/backend TS, and build tooling.
+- Rust systems engineer: Rust services, CLIs, async Rust, FFI, and performance-sensitive code.
+- SQL state architect: database schema, migrations, queries, indexes, and persistence boundaries.
+- Linux SRE master: systemd, Linux services, deploy/runtime behavior, logs, and hardening.
+- Network diagnostics: DNS, TLS, HTTP, WebSocket, proxy, firewall, and connectivity issues.
+- Performance optimizer: profiling, bottleneck analysis, latency, and throughput work.
 
 ## GitLab note
 

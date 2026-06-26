@@ -13,6 +13,11 @@ Quick reference for the specialized Claude Code agents most relevant to the naut
 | `technical-writer` | README, runbook, ADR, release note, and audit-friendly docs. | Public docs, internal evidence, sanitized explanations, and operational documentation. |
 | `compliance-reviewer` | Control evidence, data handling, POA&M candidates, and governance gaps. | Enterprise or regulated customer review preparation. |
 | `python-core-engineer` | Core Python infrastructure, asyncio, design patterns, refactoring. | Architecting backend modules, async/concurrent code, structural Python work. |
+| `typescript-core-engineer` | TypeScript/JavaScript modules, frontend/backend TS, build tooling, and type-safety reviews. | TS/JS/React/Node/Vite work, strict typing, async flow bugs, and package scripts. |
+| `rust-systems-engineer` | Rust services, CLIs, async Rust, FFI, performance, and memory-safety review. | Rust implementation, unsafe-code review, ownership/lifetime issues, Cargo/tests/benchmarks. |
+| `sql-state-architect` | Database design, SQL performance, migrations, transactions, and state boundaries. | Schema, query, index, migration, persistence, and data-integrity work. |
+| `linux-sre-master` | Linux services, systemd, logs, deployment, observability, and production hardening. | Runtime, deploy, service, resource, backup, and operational reliability work. |
+| `network-diagnostics` | DNS, TLS, HTTP, WebSocket, firewall, proxy, latency, and connectivity troubleshooting. | Network errors, timeouts, disconnects, TLS failures, and egress/proxy issues. |
 | `performance-optimizer` | Profiling, bottleneck identification, latency reduction. | Slow code, hot paths, throughput problems, "make this faster" requests. |
 
 This index intentionally stays short and focused on workflow-critical specialists. Per-agent detail files live under `agents/`.
