@@ -9,7 +9,7 @@ Install the secure-delivery skills and agent roles:
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
   --skills warmup,handoff,refine-spec,roadmap,build,repo-orientation,codex-review,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
-  --agents git-platform-engineer,repo-investigator,security-reviewer,test-engineer,technical-writer,compliance-reviewer,python-core-engineer,typescript-core-engineer,rust-systems-engineer,sql-state-architect,linux-sre-master,network-diagnostics,performance-optimizer
+  --agents git-platform-engineer,repo-investigator,security-reviewer,red-team-analyst,test-engineer,technical-writer,compliance-reviewer,python-core-engineer,typescript-core-engineer,rust-systems-engineer,sql-state-architect,linux-sre-master,network-diagnostics,performance-optimizer
 ```
 
 Install all Nautilus tools:
@@ -43,6 +43,7 @@ curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tool
 
 - Repo investigator: read-only code orientation.
 - Security reviewer: security-focused diff and architecture review.
+- Red team analyst: defensive adversarial review of plans, threat models, APIs, auth, data, MCP/tooling, and release risk.
 - Test engineer: regression coverage and verification.
 - Technical writer: user-facing and audit-facing documentation.
 - Compliance reviewer: control evidence, POA&M candidates, and governance gaps.

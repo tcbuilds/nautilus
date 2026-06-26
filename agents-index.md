@@ -9,6 +9,7 @@ Quick reference for the specialized Claude Code agents most relevant to the naut
 | `Explore` | Fast codebase search and orientation. (Claude Code built-in, not shipped here.) | "Where is X?" / "How does Y work?" questions. First stop when entering an unfamiliar repo. |
 | `repo-investigator` | Read-only repository orientation and subsystem mapping. | Use before implementation in unfamiliar codebases or compliance-sensitive environments where traceability matters. |
 | `security-reviewer` | Security-focused code, architecture, MCP/tooling, CI, and deployment review. | Auth, data exposure, injection, secrets, supply-chain, and agent-tool risk reviews. |
+| `red-team-analyst` | Defensive adversarial review of plans, architecture, auth, APIs, data handling, MCP/tooling, and release risk. | Use before high-risk implementation or delivery to surface failure modes and mitigations. |
 | `test-engineer` | Verification planning and targeted regression coverage. | Feature validation, bug regressions, release readiness, and unclear test failures. |
 | `technical-writer` | README, runbook, ADR, release note, and audit-friendly docs. | Public docs, internal evidence, sanitized explanations, and operational documentation. |
 | `compliance-reviewer` | Control evidence, data handling, POA&M candidates, and governance gaps. | Enterprise or regulated customer review preparation. |
