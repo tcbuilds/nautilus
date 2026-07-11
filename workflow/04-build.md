@@ -31,6 +31,14 @@ After every phase:
 2. **Commit** with a descriptive message that explains *why* the changes were made, not just what changed.
 3. **Push.**
 
+## Proven enforcement lessons
+
+- Keep edit-time feedback fast and advisory when a task is still incomplete. Enforce cumulative requirements, such as adding tests for new behavior, at the final task gate.
+- A compressed replay may replace an elapsed dogfood window only with explicit owner approval. Record the scenarios covered and what the replay cannot prove; never claim historical commands ran when they were substituted.
+- Preserve failed release tags and attempts. Fix forward with a new version so the deployment record remains auditable.
+- Make review independent of implementation, but executor-aware. When the active model is already Codex, review the diff directly instead of dispatching a redundant `codex-review` subagent. Other harnesses may keep their own independent reviewer.
+- Treat timeouts as bounded repository configuration. A universal short limit can turn a slow passing suite into false evidence.
+
 ## What carries you the rest of the way
 
 Once Phase 0 is solid and the build loop is humming, the remaining work flows naturally through skills and agents. The orchestrator's job becomes choosing the next task, picking the right specialist, verifying the result, and committing. That's it.
