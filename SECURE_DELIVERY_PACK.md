@@ -8,7 +8,7 @@ Install the secure-delivery skills and agent roles:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
-  --skills warmup,handoff,refine-spec,roadmap,build,repo-orientation,codex-review,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
+  --skills warmup,handoff,refine-spec,roadmap,claude-build,repo-orientation,codex-review,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
   --agents git-platform-engineer,repo-investigator,security-reviewer,red-team-analyst,test-engineer,technical-writer,compliance-reviewer,python-core-engineer,typescript-core-engineer,rust-systems-engineer,sql-state-architect,linux-sre-master,network-diagnostics,performance-optimizer
 ```
 
@@ -24,7 +24,7 @@ curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tool
 - `/warmup` - loads repo-local rules, recent history, current state, and safe next steps.
 - `/handoff` - writes resume state, validation, risks, and next steps for future sessions.
 - `/roadmap` - creates traceable implementation plans.
-- `/build` - executes planned tasks through specialized agents.
+- `/claude-build` - executes planned tasks through specialized agents behind an independent review gate.
 - `/repo-orientation` - creates onboarding-quality repo breakdowns for shared codebases.
 - `/codex-review` - runs a second-pass Codex review and blocks Critical/High findings.
 - `/hardening-audit` - checks production, LLM, MCP, API, and infrastructure hardening.

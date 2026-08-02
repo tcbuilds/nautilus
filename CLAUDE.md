@@ -28,7 +28,7 @@ This repo captures project-portable AI-assisted engineering rules and teaches pr
 - **No mock data, no testnet defaults.** Real implementations or nothing.
 - **Comments above the code, never inline.**
 - **Edit existing files when debugging** — don't create parallel copies.
-- **Commit and push verified working changes** with descriptive messages.
+- **Commit verified working changes** with descriptive messages; **push when the owner OKs it**, not automatically.
 - **Use systemctl for systemd services**, never raw kill/pkill.
 - **Examine log snapshots**, don't follow logs in real time.
 

@@ -18,7 +18,7 @@ AI-assisted development is still software development. Nautilus makes that visib
 2. **[Spec Refinement](workflow/01-spec-refinement.md)** — `/refine-spec` interrogates the draft and tightens it.
 3. **[Init](workflow/02-init.md)** — `/init` generates a project-level `CLAUDE.md` rooted in the standards.
 4. **[Roadmap](workflow/03-roadmap.md)** — `/roadmap` produces `implementation_plan.md` with phased checkboxes.
-5. **[Build](workflow/04-build.md)** — `/build` dispatches specialized agents to execute the plan.
+5. **[Build](workflow/04-build.md)** — `/claude-build` dispatches specialized agents to execute the plan.
 6. **[Incident Response](workflow/05-incident-response.md)** — Severity ladder, mitigation discipline, and blameless postmortems for when production breaks.
 7. **[Retrospective](workflow/06-retrospective.md)** — Per-phase and end-of-project retros with a DORA scoreboard, feeding lessons back into the playbook.
 8. **[Maintaining the Playbook](workflow/07-maintaining-the-playbook.md)** — `/nautilus-sync` promotes mature skills and agents into this repo with sanitization.

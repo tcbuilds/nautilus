@@ -4,7 +4,7 @@ Execute the plan. From here on, the workflow runs mostly through skills and agen
 
 ## What to run
 
-`/build`. It reads `implementation_plan.md` and dispatches specialized agents (via the Agent tool) to execute tasks.
+`/claude-build`. It reads `implementation_plan.md` and dispatches specialized agents (via the Agent tool) to execute tasks.
 
 ## Orchestrator discipline
 
@@ -29,7 +29,7 @@ After every phase:
 
 1. **Verify it works.** Run tests, hit the endpoint, exercise the CLI. Don't trust "looks right."
 2. **Commit** with a descriptive message that explains *why* the changes were made, not just what changed.
-3. **Push.**
+3. **Push only once the owner OKs it.** Commit locally at the phase boundary and report the phase result plus the commit SHA — in a repo where a push triggers deploys, scans, or keyword-activated pipelines, pushing is a production event, not a bookkeeping step.
 
 ## Proven enforcement lessons
 
@@ -45,4 +45,4 @@ Once Phase 0 is solid and the build loop is humming, the remaining work flows na
 
 ## Reminder
 
-Ship and earn beats polished and sitting in a repo. Every phase that's verified, committed, and pushed is value captured. Every phase that's "almost ready" is value at risk.
+Ship and earn beats polished and sitting in a repo. Every phase that's verified and committed is value captured, with the push following on the owner's OK. Every phase that's "almost ready" is value at risk.
