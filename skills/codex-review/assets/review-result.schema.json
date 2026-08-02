@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Codex complete review result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status","scope","standards","blast_radius","findings","vacuous_test_audit","residual_risk","verification","gate_decision"],
+  "properties": {
+    "status": {"type":"string","enum":["complete","blocked","failed"]},
+    "scope": {"$ref":"#/$defs/scope"},
+    "standards": {"$ref":"#/$defs/standards"},
+    "blast_radius": {"$ref":"#/$defs/blastRadius"},
+    "findings": {
+      "type":"array",
+      "description":"Findings ordered by severity, Critical first, then High, Medium, Low. JSON Schema cannot enforce array ordering; the reviewer must emit them already sorted.",
+      "items":{"$ref":"#/$defs/finding"}
+    },
+    "vacuous_test_audit": {"$ref":"#/$defs/vacuousTestAudit"},
+    "residual_risk": {"type":"array","items":{"$ref":"#/$defs/residualRisk"}},
+    "verification": {"type":"array","items":{"$ref":"#/$defs/verificationItem"}},
+    "gate_decision": {"type":"string","enum":["PASS","BLOCKED"]},
+    "blockers": {"type":"array","items":{"type":"string"}}
+  },
+  "allOf": [
+    {"if":{"properties":{"status":{"const":"blocked"}},"required":["status"]},
+     "then":{"required":["blockers"],"properties":{"blockers":{"minItems":1}}}},
+    {"if":{"properties":{"gate_decision":{"const":"BLOCKED"}},"required":["gate_decision"]},
+     "then":{"properties":{"findings":{"minItems":1}}}}
+  ],
+  "$defs": {
+    "severity": {"type":"string","enum":["Critical","High","Medium","Low"]},
+    "evidenceClass": {
+      "type":"string",
+      "enum":["EMPIRICALLY_VERIFIED","PROBED","HYPOTHETICAL"],
+      "description":"EMPIRICALLY_VERIFIED means observed failing behavior. PROBED means a bounded probe demonstrated reachability. HYPOTHETICAL means the path was not demonstrated."
+    },
+    "scopeStatus": {
+      "type":"string",
+      "enum":["REGRESSION","NEWLY_REACHABLE","PRE_EXISTING","HYPOTHETICAL"],
+      "description":"Classified against the target baseline, not against an idealized codebase. REGRESSION: the diff introduces the defect. NEWLY_REACHABLE: the diff materially expands reachability or impact. PRE_EXISTING: same behavior and impact already exist on the target. HYPOTHETICAL: path not demonstrated."
+    },
+    "scope": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["reviewed_files","baseline_ref","excluded_files"],
+      "properties":{
+        "reviewed_files":{"type":"array","items":{"type":"string"}},
+        "baseline_ref":{"type":"string","description":"Target baseline every finding was classified against, for example origin/main or a commit SHA."},
+        "excluded_files":{"type":"array","items":{"type":"string"},"description":"Changed files deliberately left unreviewed because they are unrelated to the task."}
+      }
+    },
+    "standards": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["standards_file","patterns_files","citation_enforced"],
+      "properties":{
+        "standards_file":{"type":["string","null"],"description":"Resolved coding-standards path, or null when no standards file was found by the cascade."},
+        "patterns_files":{"type":"array","items":{"type":"string"}},
+        "citation_enforced":{"type":"boolean","description":"False when no standards file was found; standards-citation findings are then not required and this must be surfaced in the rendered output."},
+        "note":{"type":"string"}
+      }
+    },
+    "blastRadius": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["codegraph_index_available","method","checked_symbols","affected_untouched_callers"],
+      "properties":{
+        "codegraph_index_available":{"type":"boolean"},
+        "method":{"type":"string","description":"With a CodeGraph index, how callers were enumerated. Without one, the read-only blast-radius method actually used."},
+        "checked_symbols":{"type":"array","items":{"type":"string"},"description":"Every changed public symbol whose callers were inspected."},
+        "affected_untouched_callers":{"type":"array","items":{"$ref":"#/$defs/caller"}}
+      }
+    },
+    "caller": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["symbol","file","impact"],
+      "properties":{
+        "symbol":{"type":"string"},
+        "file":{"type":"string"},
+        "line":{"type":["integer","null"],"minimum":1},
+        "impact":{"type":"string"}
+      }
+    },
+    "finding": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["fingerprint","severity","title","file","line","symbol","evidence_class","scope_status","why_diff_owns_it","violated_invariant","failing_path","repair_direction","proof_test","evidence","baseline_evidence"],
+      "properties":{
+        "fingerprint":{"type":"string","minLength":1,"description":"Stable identifier for this finding, reused verbatim across rounds so the ledger and the circuit breaker can track it."},
+        "severity":{"$ref":"#/$defs/severity"},
+        "title":{"type":"string"},
+        "file":{"type":"string"},
+        "line":{"type":["integer","null"],"minimum":1},
+        "symbol":{"type":"string"},
+        "evidence_class":{"$ref":"#/$defs/evidenceClass"},
+        "scope_status":{"$ref":"#/$defs/scopeStatus"},
+        "why_diff_owns_it":{"type":"string","description":"Why the changed diff owns this finding rather than the surrounding codebase."},
+        "violated_invariant":{"type":"string"},
+        "failing_path":{"type":"string","description":"The execution path along which the invariant breaks."},
+        "repair_direction":{"type":"string","description":"Direction of repair only. Never an executor brief."},
+        "proof_test":{"type":"string","description":"Named test that would fail before the repair and pass after it."},
+        "evidence":{"type":"string","description":"Probe output, exact error strings, and identifiers preserved verbatim."},
+        "baseline_evidence":{"type":"string","description":"Brief statement of what the target baseline does, justifying the scope_status."},
+        "standard_reference":{"type":"string","description":"Standard name or ID violated, when a standards file was found."},
+        "root_cause_family":{"type":"string","description":"Shared key for findings that trace to one root defect, including grouped test-coverage gaps."}
+      }
+    },
+    "vacuousTestAudit": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["audited","vacuous_tests"],
+      "properties":{
+        "audited":{"type":"boolean","description":"True when every new or changed test was inspected for vacuity."},
+        "vacuous_tests":{"type":"array","items":{"$ref":"#/$defs/vacuousTest"}},
+        "note":{"type":"string"}
+      }
+    },
+    "vacuousTest": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["test_name","file","why_it_cannot_fail","root_defect_fingerprint"],
+      "properties":{
+        "test_name":{"type":"string"},
+        "file":{"type":"string"},
+        "line":{"type":["integer","null"],"minimum":1},
+        "why_it_cannot_fail":{"type":"string","description":"State explicitly how this test could pass while the behavior it names is broken."},
+        "root_defect_fingerprint":{"type":"string","description":"Fingerprint of the root defect this gap is grouped under, so it does not become an independent whack-a-mole finding."}
+      }
+    },
+    "residualRisk": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["description","disposition","rationale"],
+      "properties":{
+        "fingerprint":{"type":"string"},
+        "description":{"type":"string"},
+        "disposition":{"type":"string","enum":["backlogged","accepted","monitor"]},
+        "rationale":{"type":"string","description":"Concrete reason, not a restatement of the finding."},
+        "link":{"type":["string","null"],"description":"Backlog or ticket link when disposition is backlogged."}
+      }
+    },
+    "verificationItem": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["command","result"],
+      "properties":{
+        "command":{"type":"string"},
+        "result":{"type":"string"},
+        "fallback_used":{"type":"boolean","description":"True when the RTK wrapper or another expected tool was unavailable and a fallback path ran instead."}
+      }
+    }
+  }
+}

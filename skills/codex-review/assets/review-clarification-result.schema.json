@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Codex review clarification result",
+  "description": "One clarification for a single finding. Deliberately has no executor-brief field: the reviewer names the repair direction and stops.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status","fingerprint","violated_invariant","failing_path","repair_direction","proof_test"],
+  "properties": {
+    "status": {"type":"string","enum":["complete","blocked","failed"]},
+    "fingerprint": {"type":"string","minLength":1,"description":"The single finding fingerprint being clarified. Exactly one per clarification."},
+    "violated_invariant": {"type":"string"},
+    "failing_path": {"$ref":"#/$defs/failingPath"},
+    "repair_direction": {"type":"string","description":"Direction of repair only. Not an executor brief, not a patch, not an approval."},
+    "proof_test": {"$ref":"#/$defs/proofTest"},
+    "evidence": {"type":"string","description":"Probe output, identifiers, and exact error strings preserved verbatim."},
+    "still_unbounded": {"type":"boolean","description":"True when the finding still cannot become a bounded repair after this clarification. The orchestrator treats this as a circuit-breaker trigger."},
+    "blockers": {"type":"array","items":{"type":"string"}}
+  },
+  "allOf": [
+    {"if":{"properties":{"status":{"const":"blocked"}},"required":["status"]},
+     "then":{"required":["blockers"],"properties":{"blockers":{"minItems":1}}}}
+  ],
+  "$defs": {
+    "failingPath": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["file","line","symbol","behavior"],
+      "properties":{
+        "file":{"type":"string"},
+        "line":{"type":["integer","null"],"minimum":1},
+        "symbol":{"type":"string"},
+        "behavior":{"type":"string","description":"How the invariant breaks along this path."}
+      }
+    },
+    "proofTest": {
+      "type":"object",
+      "additionalProperties":false,
+      "required":["name","proves"],
+      "properties":{
+        "name":{"type":"string"},
+        "proves":{"type":"string","description":"What the named test proves. It must be able to fail before the repair."}
+      }
+    }
+  }
+}
