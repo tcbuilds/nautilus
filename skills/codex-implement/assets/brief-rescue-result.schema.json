@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Codex Luna-max brief rescue result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "finding_fingerprints", "brief", "assumptions", "blockers"],
+  "properties": {
+    "status": { "type": "string", "enum": ["complete", "blocked", "failed"] },
+    "finding_fingerprints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "brief": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "read_first",
+        "codegraph_query",
+        "task",
+        "constraints",
+        "prohibited_partial_fixes",
+        "tests",
+        "verify",
+        "final_message_contract"
+      ],
+      "properties": {
+        "read_first": { "type": "array", "items": { "type": "string" } },
+        "codegraph_query": { "type": "string" },
+        "task": { "type": "string" },
+        "constraints": { "type": "array", "items": { "type": "string" } },
+        "prohibited_partial_fixes": { "type": "array", "items": { "type": "string" } },
+        "tests": { "type": "array", "items": { "$ref": "#/$defs/testItem" } },
+        "verify": { "type": "array", "items": { "type": "string" } },
+        "final_message_contract": { "type": "string" }
+      }
+    },
+    "assumptions": { "type": "array", "items": { "type": "string" } },
+    "blockers": { "type": "array", "items": { "type": "string" } }
+  },
+  "$defs": {
+    "testItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "proves"],
+      "properties": {
+        "name": { "type": "string" },
+        "proves": { "type": "string" }
+      }
+    }
+  }
+}

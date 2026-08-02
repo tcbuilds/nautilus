@@ -13,6 +13,7 @@ Quick reference for the Claude Code skills used in the nautilus workflow.
 | `/repo-orientation` | Create `repo_orientation.md` explaining purpose, architecture, commands, tests, deployment, and safe-change workflow. | Cross-cutting — Onboarding |
 | `/bro` | Restate the previous response in plain human language with no jargon. | Cross-cutting — Communication |
 | `/codex-review` | Run a second-pass Codex review gate over changed files and block Critical/High findings. | Cross-cutting — Review |
+| `/codex-implement` | Delegate a bounded implementation slice or review-directed repair to the Codex CLI while Claude designs, verifies, and owns Git. | Cross-cutting — Implementation |
 | `/hardening-audit` | Audit web apps, APIs, LLM integrations, and MCP/agent tool surfaces for production hardening gaps. | Cross-cutting — Security |
 | `/compliance-review` | Review repository evidence and gaps for enterprise or regulated-environment readiness without claiming certification. | Cross-cutting — Compliance |
 | `/data-classification` | Classify data flows, storage, logs, prompts, MCP outputs, and retention rules. | Cross-cutting — Data governance |
