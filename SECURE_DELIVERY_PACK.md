@@ -8,7 +8,7 @@ Install the secure-delivery skills and agent roles:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
-  --skills warmup,handoff,refine-spec,roadmap,claude-build,repo-orientation,codex-review,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
+  --skills warmup,handoff,refine-spec,roadmap,claude-build,repo-orientation,codex-review,codex-implement,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
   --agents git-platform-engineer,repo-investigator,security-reviewer,red-team-analyst,test-engineer,technical-writer,compliance-reviewer,python-core-engineer,typescript-core-engineer,rust-systems-engineer,sql-state-architect,linux-sre-master,network-diagnostics,performance-optimizer
 ```
 
@@ -17,6 +17,44 @@ Install all Nautilus tools:
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh
 ```
+
+## Prerequisites
+
+Only the Codex-backed skills need external tooling. `/warmup`, `/handoff`, `/roadmap`, `/adr-risk-register`, and the rest of the pack have no external dependency.
+
+Required for `/codex-review` and `/codex-implement`:
+
+- Codex CLI, installed and authenticated. The profile mechanism below was verified against codex-cli 0.146.0; `-p` semantics and the strict-config key set are version-dependent.
+- Python with the `jsonschema` package, if you want to validate the shipped JSON schemas locally.
+
+Optional:
+
+- `rtk` - the skills' command examples wrap calls in `rtk proxy`. Both skills document the no-rtk fallback (drop the wrapper and report it), so this is optional.
+- CodeGraph - both skills use `codegraph explore` for structural questions when a `.codegraph/` index exists, and both document a read-only fallback when it does not.
+
+**Codex profiles.** `install-tools.sh` copies each skill directory into `$DEST/skills/<name>/`, so a skill's `assets/` travels with it. Codex does not read profiles from there: `codex exec -p <name>` resolves `${CODEX_HOME:-$HOME/.codex}/<name>.config.toml` and nothing else. Install the profiles separately or every documented codex command in both skills fails with a missing-profile error.
+
+Automatic - pass `--codex-profiles` to the installer. After installing the selected skills it copies every installed skill's `assets/*.config.toml` into `${CODEX_HOME:-$HOME/.codex}/`, never overwriting an existing profile (existing ones are reported as skipped), and prints a written/skipped summary. The default is off, so the flag must be passed explicitly.
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
+  --skills warmup,handoff,refine-spec,roadmap,claude-build,repo-orientation,codex-review,codex-implement,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
+  --agents git-platform-engineer,repo-investigator,security-reviewer,red-team-analyst,test-engineer,technical-writer,compliance-reviewer,python-core-engineer,typescript-core-engineer,rust-systems-engineer,sql-state-architect,linux-sre-master,network-diagnostics,performance-optimizer \
+  --codex-profiles
+```
+
+Manual - copy the profiles out of the installed skill directories. Unlike `--codex-profiles`, this overwrites profiles that already exist.
+
+```sh
+mkdir -p "${CODEX_HOME:-$HOME/.codex}"
+cp "$HOME"/.claude/skills/codex-*/assets/*.config.toml "${CODEX_HOME:-$HOME/.codex}/"
+```
+
+**Preflight.** Verify one profile before relying on it.
+
+- Preflight the installed file, not `codex ... --help`; help does not load the profile.
+- A profile that fails `--strict-config` aborts before any model call.
+- The shipped profiles deliberately carry no `name` or `description` key. Codex 0.146.0 rejects both as unknown configuration fields under `--strict-config`, so an editor adding them back would break every launch.
 
 ## Recommended skills
 
@@ -27,6 +65,7 @@ curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tool
 - `/claude-build` - executes planned tasks through specialized agents behind an independent review gate.
 - `/repo-orientation` - creates onboarding-quality repo breakdowns for shared codebases.
 - `/codex-review` - runs a second-pass Codex review and blocks Critical/High findings.
+- `/codex-implement` - delegates a bounded implementation slice or a review-directed repair to the Codex CLI while Claude writes the brief, verifies the result, and owns Git, so the author and the reviewer of a change are different models.
 - `/hardening-audit` - checks production, LLM, MCP, API, and infrastructure hardening.
 - `/compliance-review` - maps evidence and gaps for enterprise or regulated-environment readiness.
 - `/data-classification` - identifies sensitive data and handling rules.

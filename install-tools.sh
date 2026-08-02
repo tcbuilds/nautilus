@@ -20,6 +20,12 @@
 # whatever is currently installed. Pass --no-overwrite if you would rather
 # refuse on conflict.
 #
+# Some skills ship Codex CLI profiles as assets/*.config.toml. Those files are
+# inert where a skill lives, because "codex exec -p <name>" only resolves
+# ${CODEX_HOME:-$HOME/.codex}/<name>.config.toml. Pass --codex-profiles to also
+# layer them into that directory. Opt-in, and never overwrites an existing
+# profile.
+#
 # Usage:
 #   sh install-tools.sh                              # all skills + all agents
 #   sh install-tools.sh --skills foo,bar             # subset of skills
@@ -27,6 +33,7 @@
 #   sh install-tools.sh --skills all --agents none   # explicit aliases
 #   sh install-tools.sh --dest /custom/.claude       # different home
 #   sh install-tools.sh --no-overwrite               # refuse to clobber
+#   sh install-tools.sh --codex-profiles             # also layer codex profiles
 #   sh install-tools.sh --ref v1.0.0                 # pin to a tag/branch
 #
 # Canonical one-liner:
@@ -43,6 +50,7 @@ SKILLS_INPUT=""
 AGENTS_INPUT=""
 DEST="$HOME/.claude"
 OVERWRITE=1
+CODEX_PROFILES=0
 REF="main"
 
 usage() {
@@ -51,7 +59,7 @@ nautilus user-level tooling installer
 
 Usage:
   install-tools.sh [--skills LIST] [--agents LIST] [--dest DIR]
-                   [--no-overwrite] [--ref REF] [-h|--help]
+                   [--no-overwrite] [--codex-profiles] [--ref REF] [-h|--help]
 
 Options:
   --skills LIST    Comma-separated skill names, or "all". Default: all.
@@ -59,13 +67,18 @@ Options:
   --dest DIR       Root user-config dir. Default: $HOME/.claude.
                    Writes to $DEST/skills/ and $DEST/agents/.
   --no-overwrite   Refuse to overwrite existing files. Default: overwrite.
+  --codex-profiles Also install any assets/*.config.toml shipped by the
+                   installed skills into ${CODEX_HOME:-$HOME/.codex}/, where
+                   "codex exec -p <name>" looks for them. Off by default.
+                   Never overwrites an existing profile; conflicts are skipped.
   --ref REF        Git ref/tag/branch to pull from. Default: main.
   -h, --help       Print this help and exit.
 
 Examples:
   install-tools.sh
-  install-tools.sh --skills refine-spec,build
+  install-tools.sh --skills refine-spec,claude-build
   install-tools.sh --agents git-platform-engineer --no-overwrite
+  install-tools.sh --skills codex-review,codex-implement --codex-profiles
   install-tools.sh --dest /tmp/fresh-claude --ref v1.0.0
 EOF
 }
@@ -111,6 +124,10 @@ while [ $# -gt 0 ]; do
 			;;
 		--no-overwrite)
 			OVERWRITE=0
+			shift
+			;;
+		--codex-profiles)
+			CODEX_PROFILES=1
 			shift
 			;;
 		--ref)
@@ -372,6 +389,40 @@ $DST"
 	done
 fi
 
+# Install Codex CLI profiles when asked. A profile shipped as
+# <skill>/assets/<name>.config.toml is inert where the skill lives, because
+# "codex exec -p <name>" resolves exactly $CODEX_HOME/<name>.config.toml.
+# Discover them by glob so new profiles need no change here.
+PROFILE_WRITTEN=0
+PROFILE_SKIPPED=0
+WRITTEN_PROFILES=""
+SKIPPED_PROFILES=""
+if [ "$CODEX_PROFILES" -eq 1 ]; then
+	CODEX_DIR="${CODEX_HOME:-$HOME/.codex}"
+	mkdir -p "$CODEX_DIR" || err "could not create codex home: $CODEX_DIR"
+	[ -d "$CODEX_DIR" ] || err "codex home is not a directory: $CODEX_DIR"
+	for S in $SELECTED_SKILLS; do
+		for P in "$DEST_SKILLS/$S/assets/"*.config.toml; do
+			# Bare glob with no matches expands to the literal
+			# pattern; a skill without profiles is not an error.
+			[ -f "$P" ] || continue
+			PBASE=$(basename "$P")
+			PDST="$CODEX_DIR/$PBASE"
+			# Never clobber a profile the user has already tuned.
+			if [ -e "$PDST" ]; then
+				PROFILE_SKIPPED=$((PROFILE_SKIPPED + 1))
+				SKIPPED_PROFILES="$SKIPPED_PROFILES
+$PDST"
+				continue
+			fi
+			cp -p "$P" "$PDST" || err "copy failed for codex profile: $PBASE"
+			PROFILE_WRITTEN=$((PROFILE_WRITTEN + 1))
+			WRITTEN_PROFILES="$WRITTEN_PROFILES
+$PDST"
+		done
+	done
+fi
+
 # Summary.
 TOTAL=$((SKILL_COUNT + AGENT_COUNT))
 printf '\nwrote %d artifact(s): %d skill(s), %d agent(s)\n' \
@@ -383,6 +434,22 @@ fi
 if [ "$AGENT_COUNT" -gt 0 ]; then
 	printf 'agents:\n'
 	printf '%s\n' "$WRITTEN_AGENTS" | sed '/^$/d; s/^/  /'
+fi
+if [ "$CODEX_PROFILES" -eq 1 ]; then
+	if [ "$((PROFILE_WRITTEN + PROFILE_SKIPPED))" -eq 0 ]; then
+		printf '\nno codex profiles found: no installed skill ships assets/*.config.toml\n'
+	else
+		printf '\nwrote %d codex profile(s), skipped %d existing\n' \
+			"$PROFILE_WRITTEN" "$PROFILE_SKIPPED"
+		if [ "$PROFILE_WRITTEN" -gt 0 ]; then
+			printf 'codex profiles written:\n'
+			printf '%s\n' "$WRITTEN_PROFILES" | sed '/^$/d; s/^/  /'
+		fi
+		if [ "$PROFILE_SKIPPED" -gt 0 ]; then
+			printf 'codex profiles skipped (already present):\n'
+			printf '%s\n' "$SKIPPED_PROFILES" | sed '/^$/d; s/^/  /'
+		fi
+	fi
 fi
 printf '\ndone. source: https://github.com/%s/%s (ref: %s)\n' \
 	"$REPO_OWNER" "$REPO_NAME" "$REF"

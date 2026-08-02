@@ -27,6 +27,7 @@ AI-assisted development is still software development. Nautilus makes that visib
 
 - **[Token Economy](token-economy.md)** — `caveman` mode and `rtk` cut token spend across every phase. Foundational infrastructure for any long-running Claude Code workflow.
 - **[Secure Delivery Pack](SECURE_DELIVERY_PACK.md)** — skills, templates, and agent roles for enterprise or compliance-sensitive delivery.
+- **[LGTM](https://github.com/tcbuilds/lgtm)** — a Rust binary that checks agent edits, blocks unresolved policy violations before an agent can call a task complete, and records what was verified. The enforcement layer beneath the review gate.
 
 ## Quickstart
 
