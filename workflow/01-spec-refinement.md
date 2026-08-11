@@ -12,7 +12,10 @@ The `/refine-spec` skill. It reads the draft and interactively quizzes the user 
 
 ## Prerequisites
 
-`templates/codingStandards.md` should already be copied into the project at this point. Architecture decisions made during refinement need to honor those standards (no mock data, no testnet defaults, real implementations only, etc.). If the standards aren't present, the spec can drift in directions that the build phase will have to undo.
+`.claude/rules/standards.md` should already be installed at this point, with
+path-scoped rules under `.claude/rules/`. Architecture decisions made during
+refinement need to honor those standards. If they are absent, the spec can drift
+in directions the build phase must undo.
 
 ## How to use it well
 

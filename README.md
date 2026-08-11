@@ -39,7 +39,10 @@ Bootstrap the cross-language baseline plus per-language pattern files into any p
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install.sh | sh
 ```
 
-That writes `./codingStandards.md` and `./.claude/rules/{rust,python,typescript}-patterns.md` (plus the rules `README.md`) into the current directory.
+That writes `.claude/rules/standards.md` and
+`.claude/rules/patterns/{rust,python,typescript}.md` (plus the patterns
+`README.md`) into the current directory. Claude loads `standards.md` every
+session and selects the pattern files through their `paths:` frontmatter.
 
 Filter by language:
 
@@ -60,14 +63,14 @@ If you would rather not pipe `curl` to `sh`, do it manually with the tarball:
 
 ```sh
 curl -L https://github.com/tcbuilds/nautilus/archive/main.tar.gz | tar xz
-mkdir -p .claude/rules
-cp nautilus-main/templates/codingStandards.md ./
-cp nautilus-main/templates/language-rules/README.md .claude/rules/
-cp nautilus-main/templates/language-rules/rust-patterns.md .claude/rules/
-rm -rf nautilus-main
+mkdir -p .claude/rules/patterns
+cp nautilus-main/templates/claude-rules/standards.md .claude/rules/
+cp nautilus-main/templates/claude-rules/patterns/README.md .claude/rules/patterns/
+cp nautilus-main/templates/claude-rules/patterns/rust.md .claude/rules/patterns/
+rm -r nautilus-main
 ```
 
-Swap `rust-patterns.md` for `python-patterns.md` or `typescript-patterns.md` (or copy multiple) as needed.
+Swap `rust.md` for `python.md` or `typescript.md` (or copy multiple) as needed.
 
 ### Install user-level tooling
 
@@ -139,14 +142,15 @@ nautilus/
 │   ├── 06-retrospective.md
 │   └── 07-maintaining-the-playbook.md
 ├── templates/
-│   ├── codingStandards.md
+│   ├── claude-rules/
+│   │   ├── standards.md
+│   │   └── patterns/
+│   │       ├── README.md
+│   │       ├── rust.md
+│   │       ├── python.md
+│   │       └── typescript.md
 │   ├── CLAUDE.secure-delivery-template.md
 │   ├── AGENTS.secure-delivery-template.md
-│   ├── language-rules/
-│   │   ├── README.md
-│   │   ├── rust-patterns.md
-│   │   ├── python-patterns.md
-│   │   └── typescript-patterns.md
 │   ├── mvp-template.md
 │   ├── idea-template.md
 │   ├── CLAUDE.md.template
@@ -171,7 +175,7 @@ nautilus/
 
 ## How to use this repo
 
-- **Bootstrap a new project** with the [Quickstart](#quickstart) one-liner — it drops `codingStandards.md` and the language pattern files into the right places automatically. For other templates (`CLAUDE.md.template`, `mvp-template.md`, `idea-template.md`), copy them in by hand from `templates/`.
+- **Bootstrap a new project** with the [Quickstart](#quickstart) one-liner — it drops the always-loaded standards and path-scoped language patterns into `.claude/rules/`. For other templates (`CLAUDE.md.template`, `mvp-template.md`, `idea-template.md`), copy them in by hand from `templates/`.
 - **Reference the workflow docs** in order — each phase has a single short page describing what to run, what the output is, and when to move on.
 - **Contribute back.** Living asset, not artifact. Every project that uses this playbook updates the playbook in the same PR — new lessons, new skills, new agent patterns. The shell grows with each chamber.
 - **Pull this repo** as a reference inside future Claude Code sessions when you need the canonical version of the workflow.

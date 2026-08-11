@@ -1,11 +1,11 @@
 #!/bin/sh
 # nautilus bootstrap installer
 #
-# Drops the cross-language baseline (codingStandards.md) and selected per-language
-# pattern files into a target project, mirroring the canonical deployment shape:
-#   ./codingStandards.md
-#   ./.claude/rules/README.md
-#   ./.claude/rules/{rust,python,typescript}-patterns.md
+# Drops the always-loaded baseline and selected path-scoped patterns into a
+# target project, mirroring LGTM's Claude rule layout:
+#   ./.claude/rules/standards.md
+#   ./.claude/rules/patterns/README.md
+#   ./.claude/rules/patterns/{rust,python,typescript}.md
 #
 # Source of truth lives in the nautilus repo under templates/. This script
 # pulls the tarball at install time so there is no duplication.
@@ -44,7 +44,7 @@ Options:
   --lang LIST   Comma-separated subset of {rust,python,typescript}.
                 Default: all three.
   --dest DIR    Target project directory. Default: current directory.
-  --force       Overwrite existing codingStandards.md or .claude/rules/*.md.
+  --force       Overwrite existing .claude/rules standards or patterns.
                 Default: refuse and list conflicts.
   --ref REF     Git ref/tag/branch to pull from. Default: main.
   -h, --help    Print this help and exit.
@@ -145,19 +145,20 @@ mkdir -p "$DEST" || err "could not create destination: $DEST"
 [ -d "$DEST" ] || err "destination is not a directory: $DEST"
 
 # Resolve target paths up front for the conflict pre-flight.
-TARGET_STANDARDS="$DEST/codingStandards.md"
 TARGET_RULES_DIR="$DEST/.claude/rules"
-TARGET_RULES_README="$TARGET_RULES_DIR/README.md"
+TARGET_STANDARDS="$TARGET_RULES_DIR/standards.md"
+TARGET_PATTERNS_DIR="$TARGET_RULES_DIR/patterns"
+TARGET_PATTERNS_README="$TARGET_PATTERNS_DIR/README.md"
 
 CONFLICTS=""
 if [ -e "$TARGET_STANDARDS" ]; then
 	CONFLICTS="$CONFLICTS $TARGET_STANDARDS"
 fi
-if [ -e "$TARGET_RULES_README" ]; then
-	CONFLICTS="$CONFLICTS $TARGET_RULES_README"
+if [ -e "$TARGET_PATTERNS_README" ]; then
+	CONFLICTS="$CONFLICTS $TARGET_PATTERNS_README"
 fi
 for L in $LANGS; do
-	P="$TARGET_RULES_DIR/$L-patterns.md"
+	P="$TARGET_PATTERNS_DIR/$L.md"
 	if [ -e "$P" ]; then
 		CONFLICTS="$CONFLICTS $P"
 	fi
@@ -174,10 +175,12 @@ fi
 
 # Stage everything in a temp dir; clean up on any exit.
 TMP=$(mktemp -d 2>/dev/null || mktemp -d -t nautilus-install)
-[ -n "$TMP" ] && [ -d "$TMP" ] || err "could not create temp dir"
+if [ -z "$TMP" ] || [ ! -d "$TMP" ]; then
+	err "could not create temp dir"
+fi
 
 cleanup() {
-	rm -rf "$TMP"
+	rm -r "$TMP"
 }
 trap cleanup EXIT INT HUP TERM
 
@@ -204,39 +207,39 @@ tar -xz \
 	--strip-components=2 \
 	-C "$EXTRACT_DIR" \
 	-f "$TARBALL_PATH" \
-	"$ARCHIVE_PREFIX/templates/codingStandards.md" \
-	"$ARCHIVE_PREFIX/templates/language-rules" \
+	"$ARCHIVE_PREFIX/templates/claude-rules" \
 	|| err "tar extraction failed"
 
 # Sanity: confirm the expected files arrived.
-SRC_STANDARDS="$EXTRACT_DIR/codingStandards.md"
-SRC_RULES_DIR="$EXTRACT_DIR/language-rules"
-SRC_RULES_README="$SRC_RULES_DIR/README.md"
+SRC_RULES_DIR="$EXTRACT_DIR/claude-rules"
+SRC_STANDARDS="$SRC_RULES_DIR/standards.md"
+SRC_PATTERNS_DIR="$SRC_RULES_DIR/patterns"
+SRC_PATTERNS_README="$SRC_PATTERNS_DIR/README.md"
 
-[ -f "$SRC_STANDARDS" ] || err "missing extracted file: codingStandards.md"
-[ -d "$SRC_RULES_DIR" ] || err "missing extracted dir: language-rules"
-[ -f "$SRC_RULES_README" ] || err "missing extracted file: language-rules/README.md"
+[ -f "$SRC_STANDARDS" ] || err "missing extracted file: claude-rules/standards.md"
+[ -d "$SRC_PATTERNS_DIR" ] || err "missing extracted dir: claude-rules/patterns"
+[ -f "$SRC_PATTERNS_README" ] || err "missing extracted file: claude-rules/patterns/README.md"
 for L in $LANGS; do
-	[ -f "$SRC_RULES_DIR/$L-patterns.md" ] \
-		|| err "missing extracted file: language-rules/$L-patterns.md"
+	[ -f "$SRC_PATTERNS_DIR/$L.md" ] \
+		|| err "missing extracted file: claude-rules/patterns/$L.md"
 done
 
 # All inputs validated. Write outputs.
-mkdir -p "$TARGET_RULES_DIR"
+mkdir -p "$TARGET_PATTERNS_DIR"
 
 cp "$SRC_STANDARDS" "$TARGET_STANDARDS"
 WRITTEN="$TARGET_STANDARDS"
 COUNT=1
 
-cp "$SRC_RULES_README" "$TARGET_RULES_README"
+cp "$SRC_PATTERNS_README" "$TARGET_PATTERNS_README"
 WRITTEN="$WRITTEN
-$TARGET_RULES_README"
+$TARGET_PATTERNS_README"
 COUNT=$((COUNT + 1))
 
 for L in $LANGS; do
-	cp "$SRC_RULES_DIR/$L-patterns.md" "$TARGET_RULES_DIR/$L-patterns.md"
+	cp "$SRC_PATTERNS_DIR/$L.md" "$TARGET_PATTERNS_DIR/$L.md"
 	WRITTEN="$WRITTEN
-$TARGET_RULES_DIR/$L-patterns.md"
+$TARGET_PATTERNS_DIR/$L.md"
 	COUNT=$((COUNT + 1))
 done
 

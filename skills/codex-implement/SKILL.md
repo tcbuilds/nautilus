@@ -18,9 +18,10 @@ Sol reviews the integrated phase once; implementers never review their own work.
 /codex-implement all          # remaining phases in order
 ```
 
-For a standalone task, treat that task as a one-slice phase. When
-`implementation_plan.md` exists, read `references/plan-orchestration.md` before
-slicing, launching, integrating, reviewing, or committing plan work.
+For a standalone task, treat that task as a one-slice phase. Read
+`references/plan-orchestration.md` before creating temporary worktrees, slicing,
+launching, integrating, reviewing, committing, or cleaning up. When
+`implementation_plan.md` exists, also apply its plan-selection rules.
 If no plan exists and the user supplied no task, ask what to implement; do not guess.
 
 ## Profiles
@@ -131,7 +132,7 @@ design gate:
 
 Cold-start brief, in this order:
 
-1. Mandatory read-first files, as ABSOLUTE paths you verified exist before briefing: `CLAUDE.md`, the coding standards, the matching `<language>-patterns.md`, the repo's test conventions, and named source/tests. Require declared justification for any deviation. See "Standards reach Luna only through the brief" below — this item is load-bearing, not boilerplate.
+1. Mandatory read-first files, as ABSOLUTE paths you verified exist before briefing: repository instructions, `.claude/rules/standards.md`, every path-scoped rule whose `paths:` frontmatter matches an owned source/test/config file, and named source/tests. Require declared justification for any deviation. See "Standards reach Luna only through the brief" below — this item is load-bearing, not boilerplate.
 2. Exact CodeGraph query when `.codegraph/` exists.
 3. Decided behavior: module placement, config conventions, failure semantics, and streaming behavior. Every judgment call already resolved — see "Resolve every subjective call before briefing" below. Luna implements; Claude designs.
 4. Surgical scope as a CLOSED file set — "these files and no others" — plus do-not-touch files, file-format quirks, and no commit/push. Require BLOCKED with a reason rather than silent expansion. An implicit file set reads as permission: a brief that lists files only under "read first" will get edits outside them, and the expansion is usually justified, which means the brief was under-specified rather than the executor wrong. Name every file another concurrent run holds.
@@ -155,16 +156,32 @@ If a call is genuinely the user's — scope, risk appetite, a behavior change th
 
 ### Standards reach Luna only through the brief
 
-Claude Code injects the coding standards and the matching `<language>-patterns.md` automatically, path-scoped, the moment a matching file is opened. **Codex has no equivalent.** It reads `AGENTS.md` / `AGENTS.local.md` at session start and nothing else. A rules POINTER inside `AGENTS.md` is not the rules CONTENT in context.
+Claude Code loads `.claude/rules/standards.md` every session because it has no
+`paths:` selector, then injects each matching `.claude/rules/**/*.md` file when a
+matching path is read or edited. **Codex has no equivalent.** It reads
+`AGENTS.md` / `AGENTS.local.md` at session start and nothing else. A rules
+POINTER inside `AGENTS.md` is not the rules CONTENT in context.
 
 So an unnamed rule is an absent rule. Every standard the slice must honor — rule tiers, numeric limits, naming, comment placement, quality gates — reaches the executor only because the brief names the file by absolute path and requires reading it. Omit it and Luna writes reasonable code that violates house style, and the violation surfaces at the review gate instead of at authoring time, where it costs a fix round rather than nothing.
 
 Resolve the paths per launch; do not hardcode them:
 
-1. Prefer the repo copy: `<repo>/.claude/rules/coding-standards.md`. Fall back to `~/.claude/rules/coding-standards.md`. Fall back last to this playbook's own `templates/codingStandards.md`, at the absolute path the playbook is checked out to. Same cascade for `<language>-patterns.md`, `testing.md`, and `mcp-hardening.md` when the slice touches an MCP surface; the playbook's per-language files live under `templates/language-rules/`.
-2. **Verify each resolved path exists before briefing.** A repo copy can be absent on the CHECKED-OUT branch while present on another — rule files often arrive on the very feature branch that adds them, so a worktree cut from an older base legitimately lacks them. Confirm with `git ls-tree --name-only <branch> .claude/rules/` when a path is missing rather than assuming a broken checkout.
-3. Cite a path that does not resolve and the executor silently proceeds without that standard. Nothing errors. The brief looks complete.
-4. **When no rung of the cascade resolves, do not cite a path anyway.** Drop the standards-citation requirement for that rule class, say so explicitly in the brief ("no coding-standards file resolved on this machine; house style is not available to you — follow the idiom of the files you edit and declare any judgment call"), and record the same fact on the harness task. A missing standard you named is recoverable at round 0; a fabricated path is silent.
+1. Prefer `<repo>/.claude/rules/standards.md`. Fall back to
+   `~/.claude/rules/standards.md`, then this playbook's
+   `templates/claude-rules/standards.md`. Use the rule root containing the first
+   standards file that exists.
+2. Enumerate every Markdown file below that rule root. Parse its YAML `paths:`
+   frontmatter and include every rule matching any owned source, test, fixture,
+   config, migration, or generated path. This normally selects both language
+   rules such as `rust.md` and craft patterns such as `patterns/rust.md`, plus
+   cross-cutting rules such as security, testing, naming, and error handling.
+   Never infer the rule set from language or filename alone.
+3. Only when no LGTM rule root exists, follow a standards document explicitly
+   named by repository instructions. A legacy `codingStandards.md` is a
+   compatibility fallback, not a default path to search.
+4. **Verify each resolved path exists before briefing.** A repo copy can be absent on the CHECKED-OUT branch while present on another — rule files often arrive on the very feature branch that adds them, so a worktree cut from an older base legitimately lacks them. Confirm with `git ls-tree --name-only <branch> .claude/rules/` when a path is missing rather than assuming a broken checkout.
+5. Cite a path that does not resolve and the executor silently proceeds without that standard. Nothing errors. The brief looks complete.
+6. **When no rule root or explicit legacy document resolves, do not cite a path anyway.** Drop the standards-citation requirement, say so explicitly in the brief, and record the same fact on the harness task. A missing standard you named is recoverable at round 0; a fabricated path is silent.
 
 State the effort tier and the resolved rule paths in the harness task, so a later comparison between slices knows what each run actually had.
 
@@ -263,10 +280,12 @@ Stop when all acceptance tests and full suites pass, no empirically verified or 
 After commit:
 
 1. Tick plan and complete matching harness task; record accepted risks.
-2. Update `HANDOFF.md`.
-3. Save next Luna brief while context is hot.
-4. Run `/clear`, not `/compact`.
-5. Next session: `/warmup` resume mode, then launch saved brief.
+2. Apply the reference's cleanup protocol to every temporary worktree and branch
+   created by this invocation. Report any retained path and the failed safety check.
+3. Update `HANDOFF.md`.
+4. Save next Luna brief while context is hot.
+5. Run `/clear`, not `/compact`.
+6. Next session: `/warmup` resume mode, then launch saved brief.
 
 Never clear/compact mid-loop.
 

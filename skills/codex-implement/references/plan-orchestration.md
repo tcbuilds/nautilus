@@ -3,6 +3,18 @@
 Use this workflow when `codex-implement` receives `phase`, `all`, a plan-task
 name, or no argument while `implementation_plan.md` exists.
 
+## Contents
+
+1. Select and slice work
+2. Protect existing work
+3. Create isolated worktrees
+4. Brief each slice
+5. Dispatch waves
+6. Verify and integrate slices
+7. Gate and review the phase
+8. Publish the phase boundary
+9. Clean up run-owned worktrees
+
 ## 1. Select and slice work
 
 Read the plan in document order. Identify phase boundaries, unchecked tasks,
@@ -43,6 +55,9 @@ Before creating worktrees:
 2. Record every pre-existing dirty path and whether it belongs to this phase.
 3. Refuse to mix unrelated dirty paths into the phase.
 4. Confirm branch policy before non-trivial work on `main` or `master`.
+5. Record `git worktree list --porcelain` as the pre-existing worktree inventory.
+   Maintain a separate ledger of every worktree path, branch, and temporary commit
+   created by this invocation. Only ledger entries are cleanup candidates.
 
 Codex state artifacts do not justify changing `.gitignore`. Repositories may
 intentionally track `.codex/` harness configuration.
@@ -158,15 +173,35 @@ When a phase contains both structural and behavioral work, create separate
 phase-boundary commits rather than mixing them. Push only when user or repository
 policy authorizes it.
 
-## 9. Cleanup
+## 9. Clean up run-owned worktrees
 
-Remove temporary worktrees and branches only after:
+Cleanup is required after a successful phase publication, including a standalone
+one-slice phase. Do not use `git branch --merged` as the proof: squash merges and
+cherry-picks preserve content without preserving ancestry.
 
-- the public phase commit exists;
-- any authorized push is confirmed;
-- every temporary worktree is clean;
-- no recorded user work would be removed.
+For each cleanup candidate, require all of this evidence:
 
-Keep diagnostic output only when a failed lane needs recovery. Otherwise remove
-temporary briefs and schemas; retain the small per-worktree final result until
-the phase report is complete.
+- its exact path and branch were recorded as created by this invocation;
+- the public phase commit exists on the user branch;
+- any push authorized for this phase is confirmed;
+- every slice and repair commit is recorded as successfully cherry-picked into
+  the phase branch;
+- the exact published phase paths, including `implementation_plan.md` when
+  changed, have no diff between the phase branch and public phase commit;
+- `git -C <candidate-path> status --porcelain` is empty;
+- the candidate is not the user worktree, current working directory, or any
+  worktree from the pre-existing inventory.
+
+If any check fails, keep that worktree and branch. Report its exact path and the
+failed check; never force removal to make cleanup appear successful.
+
+Remove eligible slice and repair worktrees first, then the phase integration
+worktree. Do not pass `--force` to `git worktree remove`. Delete only the exact
+temporary branches recorded in the ledger. A squash or cherry-pick may require
+forced branch deletion because ancestry does not show the proven integration;
+permit that only after every evidence check above passes. Never use a branch
+glob and never delete a pre-existing branch.
+
+Run `git worktree list --porcelain` afterward. Report every retained run-owned
+worktree and why it remains. Keep diagnostic output only when a failed lane needs
+recovery. Otherwise remove temporary briefs and schemas after the phase report.

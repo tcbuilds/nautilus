@@ -42,7 +42,15 @@ Run in background. Network is enabled for all hosts. Keep `rtk proxy`, `timeout 
 ## Review contract
 
 1. Derive scoped tracked/untracked files from user input and Git state.
-2. Resolve the coding standards file by cascade: repo `.claude/rules/coding-standards.md`, else `~/.claude/rules/coding-standards.md`, else repo `templates/codingStandards.md`. Read the first that exists plus the matching `*-patterns.md`, and cite explicit violations by standard name/ID, minimum Medium. If none exists, skip the standards-citation requirement and record in the output that no standards file was found.
+2. Resolve the first standards root containing `standards.md`: repo
+   `.claude/rules/`, else `~/.claude/rules/`, else this playbook's
+   `templates/claude-rules/`. Read `standards.md`, then parse `paths:`
+   frontmatter below that root and read every rule matching a scoped source,
+   test, fixture, config, migration, or generated path. Select by path match,
+   never by a guessed language filename. If no LGTM root exists, use only a
+   legacy standards document explicitly named by repository instructions. Cite
+   explicit violations by standard name/ID, minimum Medium. If none resolves,
+   skip standards citation and record that no standards file was found.
 3. With `.codegraph/`, use `codegraph explore` for structural questions and inspect callers of every changed public symbol. Report affected untouched callers/call paths and list checked symbols. Without index, record read-only blast-radius method.
 4. Require findings in severity order. Each has evidence class, stable fingerprint, scope status, violated invariant, failing path, repair direction, named proof test, and evidence. Reviewer direction is not executor brief.
 5. Compare every candidate finding against the target baseline before scoring it. Use `REGRESSION` when the diff introduces a defect, `NEWLY_REACHABLE` when the diff materially expands reachability or impact, `PRE_EXISTING` when the same behavior and impact already exist on the target, and `HYPOTHETICAL` when the path is not demonstrated. State the baseline evidence briefly.

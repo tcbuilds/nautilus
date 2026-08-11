@@ -10,7 +10,9 @@ paths:
 
 # TypeScript Patterns — Project Development Rules
 
-Project-specific TypeScript idioms and constraints. Copy into `.claude/rules/` of any new project, then trim or extend per project needs. Pairs with the cross-language `../codingStandards.md` baseline.
+Project-specific TypeScript idioms and constraints. Install as
+`.claude/rules/patterns/typescript.md`, then trim or extend per project needs.
+Pairs with the always-loaded `../standards.md` baseline.
 
 ## Non-Negotiable Rules
 

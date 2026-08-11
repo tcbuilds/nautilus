@@ -12,7 +12,10 @@ Two non-negotiables:
 
 1. **Mandatory agent delegation.** The top-level Claude Code session is an orchestrator only. It never writes code, runs commands, or makes edits directly. All implementation work flows through specialized agents invoked via the Agent tool. Subagents executing under that orchestrator *are* the specialists and must ship — they don't refuse implementation work by citing the orchestrator rule.
 
-2. **Adherence to `codingStandards.md`** as the ground-truth rules for code style, comments, data handling, file management, git workflow, and process management. The CLAUDE.md should reference the standards file directly rather than restating it.
+2. **Adherence to `.claude/rules/standards.md` and matching path-scoped rules**
+   as the ground truth for code style, comments, data handling, file management,
+   Git workflow, and process management. Do not duplicate those rules in
+   `CLAUDE.md`.
 
 ## ADR directory
 
@@ -33,4 +36,6 @@ The template exists because `/init` is good at codebase summary but uneven at en
 
 ## Exit criteria
 
-`CLAUDE.md` is committed, references `codingStandards.md`, encodes the orchestrator/delegation rules explicitly, and the project is ready for roadmapping.
+`CLAUDE.md` is committed, relies on the installed `.claude/rules/` contract,
+encodes orchestrator/delegation rules explicitly, and the project is ready for
+roadmapping.

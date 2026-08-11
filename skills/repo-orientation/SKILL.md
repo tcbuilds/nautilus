@@ -22,7 +22,7 @@ Read any present files:
 - `CLAUDE.md`
 - `CONTRIBUTING.md`
 - `SECURITY.md`
-- `codingStandards.md`
+- `.claude/rules/standards.md` and matching path-scoped `.claude/rules/**/*.md`
 - `docs/`
 - `implementation_plan.md`
 

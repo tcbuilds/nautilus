@@ -7,7 +7,8 @@ This is a documentation and workflow playbook repo, not an application. Keep con
 - `README.md` gives the public overview and canonical repo map.
 - `CLAUDE.md` contains repo-specific agent/editor instructions.
 - `workflow/` holds phase docs, ordered by numeric prefixes such as `00-discovery.md`.
-- `templates/` contains reusable project templates, including `templates/language-rules/`.
+- `templates/` contains reusable project templates, including the LGTM-aligned
+  `templates/claude-rules/` layout.
 - `skills/`, `agents/`, and `examples/` hold short index-style docs and future examples.
 - `token-economy.md`, `skills-index.md`, and `agents-index.md` are cross-cutting references.
 

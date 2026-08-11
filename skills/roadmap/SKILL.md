@@ -72,7 +72,9 @@ Check for:
 - Platform and workflow: `git remote -v`, `.gitlab-ci.yml`, `.github/workflows/`, merge/pull request templates, CODEOWNERS.
 - Project commands: README, Makefile, package scripts, pyproject, Cargo.toml, justfile, taskfile, tox, nox.
 - Existing quality gates: test commands, lint/typecheck commands, coverage config, security scans, dependency checks.
-- Existing docs: CLAUDE.md, AGENTS.md, codingStandards.md, CONTRIBUTING.md, SECURITY.md, ADRs, runbooks.
+- Existing docs: `CLAUDE.md`, `AGENTS.md`, `.claude/rules/standards.md`,
+  matching path-scoped `.claude/rules/**/*.md`, `CONTRIBUTING.md`,
+  `SECURITY.md`, ADRs, and runbooks.
 - Existing architecture: source directories, tests, migrations, deployment manifests, Dockerfiles, infra files.
 
 Planning rules:
@@ -115,7 +117,9 @@ Do not silently break an existing public API, persisted data format, CLI contrac
 1. **If implementation_plan.md doesn't exist:**
    - Read the spec file(s) the user points at (mvp.md, prd.md, brief.md). If none exists, ask.
    - Read applicable project instructions and `context/resources/` before guessing.
-   - Read CLAUDE.md and any standards docs (codingStandards.md) for project-specific rules.
+   - Read repository instructions, `.claude/rules/standards.md`, and every
+     path-scoped rule matching the planned file types. Use a legacy standards
+     document only when repository instructions explicitly name it.
    - Run repo-first discovery and summarize existing commands, gates, platform, and docs before planning.
    - Trace the real flow and use CodeGraph blast-radius analysis for structural changes when indexed.
    - Identify project shape (see above). If ambiguous, ask before generating.

@@ -16,14 +16,18 @@ Project-level instructions for Claude Code. Copy this template into the project 
 
 ## Coding standards
 
-This project follows `codingStandards.md` (in the project root). That file is the ground truth for:
+Claude always loads `.claude/rules/standards.md`. It also loads every
+`.claude/rules/**/*.md` file whose `paths:` frontmatter matches the file being
+read or edited. Together those files are the ground truth for:
 
 - Comments (never inline; always above the code).
 - Data handling (no mock data, no testnet defaults, real implementations only).
 - File management (edit existing scripts when debugging; don't create parallel copies).
 - Workflow optimization (parallel tool invocation, reflect on results, clean up temp files).
 
-Read `codingStandards.md` before any non-trivial change.
+Confirm the matching rule files are present in `/context` before any non-trivial
+change. Delegated tools without Claude's path-scoped loading must receive the
+matching rule paths explicitly.
 
 ## Git workflow
 

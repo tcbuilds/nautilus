@@ -66,9 +66,12 @@ Construct a self-contained prompt. Substitute ALL `{PLACEHOLDERS}` before dispat
 
 **Path resolution** (first hit wins; else literal `(not found)`):
 - `{CLAUDE_MD_PATH}`: `{PROJECT_ROOT}/CLAUDE.md` → `{PROJECT_ROOT}/docs/CLAUDE.md` → `{PROJECT_ROOT}/.claude/CLAUDE.md` → `~/CLAUDE.md`
-- `{STANDARDS_PATH}`: `{PROJECT_ROOT}/.claude/rules/coding-standards.md` → `~/.claude/rules/coding-standards.md` → this playbook's own `templates/codingStandards.md`, at the absolute path the playbook is checked out to
+- `{STANDARDS_PATH}`: `{PROJECT_ROOT}/.claude/rules/standards.md` → `~/.claude/rules/standards.md` → this playbook's own `templates/claude-rules/standards.md`, at the absolute path the playbook is checked out to
 
-Also identify the matching `.claude/rules/*-patterns.md` / language rule file for the task's language and include it in Files to Read First.
+Set `{MATCHING_RULE_PATHS}` by parsing `paths:` frontmatter for every Markdown
+file below the selected rule root and selecting all files matching task-owned
+source, test, fixture, config, migration, or generated paths. Include language,
+`patterns/`, and cross-cutting rules; never select by filename alone.
 
 If both resolve `(not found)`, warn the user before dispatching.
 
@@ -94,7 +97,7 @@ Root directory: {PROJECT_ROOT}
 ## Files to Read First (mandatory)
 - `{CLAUDE_MD_PATH}` — project conventions
 - `{STANDARDS_PATH}` — cross-language coding standards
-- `{LANGUAGE_RULES_PATH}` — language-specific patterns (if present)
+- `{MATCHING_RULE_PATHS}` — every path-scoped rule matching the task files
 {FILE_LIST — existing files to read for context}
 
 ## Conventions
@@ -102,7 +105,7 @@ Root directory: {PROJECT_ROOT}
 - No mock data in live code. No placeholder secrets — env vars only.
 - Edit existing files; no parallel copies.
 - Do NOT commit — the coordinator owns git operations.
-- Honor every rule in {STANDARDS_PATH} and {LANGUAGE_RULES_PATH}.
+- Honor every rule in {STANDARDS_PATH} and {MATCHING_RULE_PATHS}.
 
 ## Deliverable
 Report back EXACTLY:
