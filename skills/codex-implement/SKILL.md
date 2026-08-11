@@ -1,11 +1,27 @@
 ---
 name: codex-implement
-description: Delegate an implementation slice or review-directed repair to the Codex CLI (Luna, xhigh effort) while Claude stays orchestrator. Use when the user wants cross-family implementation, Codex writes the code, or Claude must turn a Sol review or Sol-max repair contract into a bounded Luna fix.
+description: Execute one implementation slice or an implementation_plan.md task, phase, or full plan through parallel file-owned Codex CLI workers in isolated Git worktrees. Uses Luna max, focused slice proof, one integrated Sol review per phase, and phase-boundary commits while the parent owns design, verification, and Git.
 ---
 
 # Codex Implement
 
-Claude designs, briefs, verifies, and owns Git. Luna implements. Sol gates via `codex-review`; author and gate reviewer must differ.
+The parent designs, slices, verifies, integrates, and owns Git. Luna implements.
+Sol reviews the integrated phase once; implementers never review their own work.
+
+## Usage
+
+```text
+/codex-implement "<single task>"
+/codex-implement <brief-path>
+/codex-implement              # next unchecked plan task when a plan exists
+/codex-implement phase        # current phase in parallel waves
+/codex-implement all          # remaining phases in order
+```
+
+For a standalone task, treat that task as a one-slice phase. When
+`implementation_plan.md` exists, read `references/plan-orchestration.md` before
+slicing, launching, integrating, reviewing, or committing plan work.
+If no plan exists and the user supplied no task, ask what to implement; do not guess.
 
 ## Profiles
 
@@ -16,11 +32,12 @@ Install without overwriting existing profiles:
 - `assets/luna_max_executor.config.toml` -> `${CODEX_HOME:-$HOME/.codex}/luna_max_executor.config.toml`
 - `assets/luna_max_brief_rescuer.config.toml` -> `${CODEX_HOME:-$HOME/.codex}/luna_max_brief_rescuer.config.toml`
 
-Preflight the installed file, not `codex ... --help` (help does not load the profile): require the exact `${CODEX_HOME:-$HOME/.codex}/<name>.config.toml`, parse it with a local TOML parser, and assert expected model, effort, network, and delegation pins. Launch with `--strict-config` for Codex's recognized-key check. Executor pins `gpt-5.6-luna` xhigh. Optional brief rescuer pins Luna max and disables delegation. Review stays `gpt-5.6-sol` high.
+Preflight the installed file, not `codex ... --help` (help does not load the profile): require the exact `${CODEX_HOME:-$HOME/.codex}/<name>.config.toml`, parse it with a local TOML parser, and assert expected model, effort, network, and delegation pins. Launch with `--strict-config` for Codex's recognized-key check. The default executor pins `gpt-5.6-luna` max. Optional brief rescuer also uses Luna max with a read-only sandbox. Review stays `gpt-5.6-sol` high.
 
-Xhigh is the executor default. A slice brief carries a design that already resolved the reasoning, so the tier buys fidelity on a long contract rather than fresh analysis — and xhigh holds a long contract without max's wall-clock cost.
+Max is the executor default. High and xhigh remain explicit lower-cost overrides; switch
+profiles by name rather than editing one in place so the evidence records which tier ran.
 
-Three executor profiles stay installed, differing ONLY in `model_reasoning_effort`: `luna_high_executor`, `luna_xhigh_executor`, `luna_max_executor`. Change tier by switching the `-p` name, never by editing a profile in place — the launch line is then self-documenting about which tier ran, which is what makes two slices comparable after the fact. Reserve `luna_max_executor` for a slice whose brief is long AND whose invariants are cross-cutting; prefer `codex-review`'s Sol-max repair architect over a max executor when the problem is diagnosis rather than transcription.
+Three executor profiles stay installed, differing ONLY in `model_reasoning_effort`: `luna_high_executor`, `luna_xhigh_executor`, `luna_max_executor`. Use another tier only when the user explicitly requests it or project policy sets it. Prefer `codex-review`'s Sol-max repair architect when the problem is diagnosis rather than transcription.
 
 Profiles carry no `name` or `description` key. Codex rejects both as unknown configuration fields under `--strict-config`; the description lives in a leading `#` comment instead.
 
@@ -28,9 +45,11 @@ Profiles carry no `name` or `description` key. Codex rejects both as unknown con
 
 Create one harness task per plan slice, in plan order. Keep it `pending` until launch, `in_progress` through fixes, and `completed` only after gate closure, plan update, and any accepted-risk disposition.
 
-## Parallelize implementation aggressively
+## Parallelize implementation safely
 
-**Default to many concurrent Luna lanes, not one big brief.** Luna is cheap; the scarce resources are wall-clock and the coordinator's attention. A serial lane that could have been four is waste. This applies to IMPLEMENTATION only — reviews stay single-gate and serial, because a gate's value comes from one reviewer holding the whole diff.
+**Default to concurrent Luna lanes, not one large brief.** Cap active lanes at four
+unless the user or project policy says otherwise. Parallelism applies only to
+implementation; one reviewer must hold the whole integrated phase diff.
 
 Batching everything into one brief has a specific failure mode: when the hardest item comes back BLOCKED or wrong, its fix round drags every other item's context along with it. One session, one report, one resume thread, one entangled retry.
 
@@ -40,25 +59,28 @@ Batching everything into one brief has a specific failure mode: when the hardest
 2. **Small mechanical items batch into one lane.** Four one-line guards do not need four sessions; the per-lane overhead would exceed the work.
 3. **Items sharing a FILE stay in the same lane. Always.** Check file overlap before counting lanes — two findings in one file cannot be split apart, so a five-finding round may only afford three or four lanes.
 
-### What parallelism costs, so the split is deliberate
+### Isolation and ownership
 
 - **Standards context multiplies per lane.** Every brief must name the rule files by absolute path (see "Standards reach Luna only through the brief"), so each lane re-reads them. Accept this — Luna is cheap and a style violation caught at the gate costs a whole round.
-- **Concurrent lanes in ONE worktree collide** on Git state, a shared `.venv`, and pytest cache artifacts. Either partition the editable file set strictly per lane and name every file another lane holds, or give each lane its own worktree. Strict partitioning is usually enough and much cheaper than N worktrees.
+- **Every concurrent lane gets an isolated Git worktree.** Disjoint intended files do not make one shared worktree safe: Git state, caches, formatters, and output files still race.
 - **Round-0 surface grows with lanes.** N lanes means N diffs to review and N reports whose claimed counts you must re-run independently. Budget for it.
 
 ### Rules that do not relax under parallelism
 
 - One harness task per lane, so a later comparison knows what ran where.
 - Every lane gets its own CLOSED editable file set. An implicit set plus concurrency produces conflicting edits to the same file.
-- No lane commits. The coordinator integrates and owns Git, exactly as serial.
+- Luna never commits. After independent verification, the coordinator makes a temporary
+  slice commit for deterministic integration into the phase worktree. Never push slice
+  branches.
 - Verify each lane independently. Never let one lane's green suite stand in for another's.
+- Do not invoke Sol or `codex-review` for individual slices.
 
 ## Launch
 
 ```bash
 OUT=<scratch>/codex-luna-<slice>.md
 cd <worktree-or-repo-root>
-rtk proxy timeout 3500 codex exec -p luna_xhigh_executor --strict-config \
+rtk proxy codex exec -p luna_max_executor --strict-config \
   --add-dir "$HOME/.local/share/rtk" --skip-git-repo-check \
   --output-schema "<skill-dir>/assets/implement-result.schema.json" \
   -o "$OUT" '<BRIEF>' < /dev/null
@@ -66,7 +88,8 @@ rtk proxy timeout 3500 codex exec -p luna_xhigh_executor --strict-config \
 
 Run in background; foreground harness calls can kill long runs. Profile enables workspace-write network access for all hosts. Required guards:
 
-- Keep `rtk proxy` when available, `< /dev/null`, and bounded `timeout`.
+- Keep `rtk proxy` when available and `< /dev/null`. Launch through the caller's
+  background-process mechanism; do not use a shell `timeout` wrapper.
 - Missing/empty `$OUT` or nonzero exit = failed run. Inspect Git before judging whether edits landed.
 - Never trust report paths or claimed checks without independent verification.
 
@@ -95,11 +118,13 @@ Resolve all of these to absolute paths before the launch line runs. Nothing here
 
 ### Design gate
 
-When task says `Design gate: yes`, or uses heuristic resolution/inference:
+When any selected slice says `Design gate: yes`, or uses heuristic
+resolution/inference, consolidate the affected slice contracts into one pre-phase
+design gate:
 
 1. Write a short contract covering acceptance paths, evidence, fail-closed and degradation behavior, budgets, and preparation mechanics.
 2. If work prepares multiple inputs, queues/attaches jobs, or reads shared mutable state, include races and dedup/coalescing keys.
-3. Run one Sol review over contract plus seam files: ask which inputs create wrong-but-confident output and which evidence class is missing.
+3. Run one Sol review over all affected contracts plus seam files: ask which inputs create wrong-but-confident output and which evidence class is missing.
 4. Resolve findings before briefing Luna.
 
 ## Brief contract
@@ -158,16 +183,28 @@ So put the acceptance in the brief, per test:
 
 Then rerun every mutation yourself. Reasoning about which test covers a mutation gives wrong answers, and each one costs roughly thirty seconds. Anchor each patch on a string that occurs exactly once and assert that count, or the patch silently applies nowhere and the test's pass proves nothing.
 
-## Verify and review
+## Verify slices, integrate, then review the phase
 
-1. Read `$OUT` tail. Derive change set using `git status --short`, `git diff --name-only`, and `git diff --stat`; record report mismatches.
-2. Independently run focused tests, lint, and typecheck. Rerun every mutation the executor claimed; a claimed mutation is not evidence until you watch it fail.
-3. Perform Claude round-0 hunk review, including the standards pass below.
-4. Start fresh Sol `codex-review`.
-5. Send fixes to original Luna session with `codex exec resume <session_id>`. For substantial fixes, re-pass `-m gpt-5.6-luna`, `-c model_reasoning_effort=xhigh`, and `--output-schema "<skill-dir>/assets/implement-result.schema.json"`. `resume` inherits sandbox/network and has no `--sandbox`, `--add-dir`, or `-p` flag at all — passing any of them is an argument error, so drop them on resume. Confirmed against codex-cli 0.146.0; re-check `codex exec resume --help` before removing any other flag.
-6. After each fix, run affected checks and resume original Sol reviewer to verify only its findings.
-7. When stable, run full affected suite once, then a second complete review in fresh Sol without prior findings/verdict. Compare ledger afterward.
-8. Any later code change makes full-suite evidence stale. Re-run affected checks, full suite, and fresh Sol gate.
+### Close each slice without Sol
+
+1. Read `$OUT` tail. Derive the change set using `git status --short`, `git diff --name-only`, and `git diff --stat`; record report mismatches.
+2. Require every changed path to be inside the slice's closed file set. Extra paths fail the slice rather than expanding its scope silently.
+3. Independently run focused tests, lint, and typecheck. Rerun every mutation the executor claimed; a claimed mutation is not evidence until you watch it fail.
+4. Perform the round-0 hunk and standards pass below.
+5. Stage only owned paths and create a temporary slice commit. Cherry-pick it into the phase worktree in deterministic slice-ID order. A conflict proves the ownership DAG was wrong: repair the DAG and rerun the affected slice from the new phase head.
+
+Do not run `codex-review` here. Focused proof plus scope verification closes a slice.
+
+### Gate the integrated phase once
+
+1. After every required slice is integrated, run every configured repository validation command in the phase worktree.
+2. Start one fresh Sol `codex-review` over the complete `BASE_SHA..HEAD` phase diff. Empty, malformed, or stale review output is not a pass; retry once, then block.
+3. Critical/High findings trigger a bounded Luna-max repair from the current phase head. Use the verified repair contract below when diagnosis is cross-cutting. Integrate the fix and rerun all configured gates.
+4. Resume the same Sol reviewer only to verify its named findings. Maximum two fix/verification cycles; do not start per-slice or duplicate fresh reviews.
+5. Fix, backlog with a link, or explicitly accept Medium/Low findings according to project policy.
+6. Mark plan items complete only after every child slice, full gates, and the integrated review close. Commit at the phase boundary and push only when user/repository policy authorizes it.
+
+Any later code change makes phase evidence stale. Rerun full configured gates and have the same phase reviewer verify the affected finding set before commit.
 
 ### Round-0 standards pass
 
@@ -200,7 +237,7 @@ When `codex-review` returns a Sol-max contract:
 2. Verify every seam, path, symbol, and assumption against current CodeGraph and diff.
 3. Resolve repo-rule/acceptance conflicts; stop for unauthorized behavior or scope changes.
 4. Convert verified contract into normal Luna brief, including prohibited partial fixes and named regressions.
-5. Resume original Luna, derive actual Git diff, run focused checks, then resume original Sol-high reviewer.
+5. Launch a Luna-max repair worktree from the current phase head, derive the actual Git diff, run focused checks, integrate it, then resume the phase Sol-high reviewer.
 
 Sol-high supplies repair direction. Sol-max supplies root-cause design after circuit breaker. Neither writes executor brief or owns gate.
 
@@ -209,7 +246,7 @@ Sol-high supplies repair direction. Sol-max supplies root-cause design after cir
 Use once per finding family only when a valid architect contract remains ambiguous because of cross-cutting constraints, stale state, or seam ownership. Never use for routine formatting or as second architect.
 
 ```bash
-rtk proxy timeout 1200 codex exec -p luna_max_brief_rescuer --strict-config \
+rtk proxy codex exec -p luna_max_brief_rescuer --strict-config \
   --add-dir "$HOME/.local/share/rtk" --skip-git-repo-check \
   --output-schema "<skill-dir>/assets/brief-rescue-result.schema.json" \
   -o "$RESCUE_OUT" \
@@ -217,7 +254,7 @@ rtk proxy timeout 1200 codex exec -p luna_max_brief_rescuer --strict-config \
   < /dev/null
 ```
 
-Run in background. Compare Git status/diff names before and after. Claude verifies/finalizes draft. If blocked, stop and replan or ask user. Never expose architect output, rescue output, ledger, or prior verdicts to fresh final Sol.
+Run in background. Compare Git status/diff names before and after. The parent verifies/finalizes the draft. If blocked, stop and replan or ask the user. Never expose architect output, rescue output, ledger, or prior verdicts beyond the bounded finding-verification context.
 
 ## Stop and checkpoint
 
@@ -236,7 +273,7 @@ Never clear/compact mid-loop.
 ## Gate rules
 
 - Implementer never gate-reviews own work.
-- Commit only after final full-suite evidence and fresh review pass.
+- Commit only after full configured gate evidence and the integrated phase review pass.
 - MR evidence: DoD -> named tests, exact independent commands/counts, rollback, and changed-symbol blast radius. Do not include agent/model/round mechanics, internal plans/handoffs/briefs, or formal residual-risk ceremony.
 - Cost source: cumulative `total_token_usage` in `~/.codex/sessions/**/*.jsonl`.
 - Never put secrets or controlled data in briefs; refer to secret names only.

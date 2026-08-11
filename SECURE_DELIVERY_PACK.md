@@ -65,7 +65,7 @@ cp "$HOME"/.claude/skills/codex-*/assets/*.config.toml "${CODEX_HOME:-$HOME/.cod
 - `/claude-build` - executes planned tasks through specialized agents behind an independent review gate.
 - `/repo-orientation` - creates onboarding-quality repo breakdowns for shared codebases.
 - `/codex-review` - runs a second-pass Codex review and blocks Critical/High findings.
-- `/codex-implement` - delegates a bounded implementation slice or a review-directed repair to the Codex CLI while Claude writes the brief, verifies the result, and owns Git, so the author and the reviewer of a change are different models.
+- `/codex-implement` - executes one slice or an implementation-plan task, phase, or full plan through file-owned Luna workers in isolated worktrees; the parent verifies each slice and one independent Sol reviewer gates the integrated phase.
 - `/hardening-audit` - checks production, LLM, MCP, API, and infrastructure hardening.
 - `/compliance-review` - maps evidence and gaps for enterprise or regulated-environment readiness.
 - `/data-classification` - identifies sensitive data and handling rules.
