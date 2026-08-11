@@ -1,11 +1,11 @@
 ---
 name: roadmap
-description: Create or update implementation_plan.md with Markdown task checkboxes. Use when asked to "plan the project", "create a task list", "what needs to be done", or "organize implementation steps".
+description: Create or update implementation_plan.md with the smallest useful set of Markdown task checkboxes. Use when asked to plan a project, create a task list, organize implementation, identify what needs to be done, or update an existing implementation plan.
 ---
 
 # Implementation Plan Manager
 
-Create or update an `implementation_plan.md` file with Markdown task checkboxes for tracking project tasks.
+Create or update an `implementation_plan.md` file with Markdown task checkboxes for tracking project tasks. Scale the plan to the request: a simple fix may need one vertical slice and one verification step; a larger project may need phases.
 
 ## Anti-slop rules (read first)
 
@@ -26,7 +26,19 @@ If a task doesn't trace to one of those three, it's slop. Common slop patterns t
 - "Add compliance process" — add only when the project handles controlled data, customer confidential data, production access, enterprise delivery, or an explicit audit/security requirement.
 - "Run every audit skill" — slop unless the project shape calls for it. Pick the narrow gate that controls the actual risk.
 
-**Default to less.** A 50-task plan that ships beats a 200-task plan that suffocates. If you're unsure whether a task belongs, ask the user instead of emitting it.
+**Default to less.** The smallest plan that fully ships beats a large plan that suffocates. If you're unsure whether a task belongs, ask the user instead of emitting it.
+
+## Smallest solution first
+
+Before emitting tasks, stop at the first option that fully meets the request:
+
+1. Skip work that is not needed.
+2. Reuse an existing helper, type, component, or pattern.
+3. Prefer the standard library or native platform.
+4. Prefer an already-installed dependency over adding one.
+5. Plan only the minimum new code that works.
+
+Do not plan speculative abstractions, scaffolding, dependencies, configuration, refactors, compatibility machinery, or future-proofing. Trace the real flow and fix shared root causes once instead of planning repeated symptom patches. Preserve security, trust-boundary validation, accessibility, and data-loss protection.
 
 ## Task shape
 
@@ -71,6 +83,17 @@ Planning rules:
 - If a stronger gate is genuinely required, explain the repo evidence and the risk that justifies adding it.
 - If discovery is inconclusive, ask one focused question instead of filling the plan with generic setup tasks.
 
+## CodeGraph blast radius
+
+For structural code questions, use CodeGraph instead of grep when the project has a `.codegraph/` index:
+
+1. Use `codegraph_context` to find the relevant flow, symbols, and definitions.
+2. Use `codegraph_impact` on symbols the plan proposes changing.
+3. Use `codegraph_callers` or `codegraph_callees` only when more focused call-path detail is needed.
+4. Record affected callers, entry points, public contracts, persisted data, and relevant tests in the plan. Do not copy raw tool output into the plan.
+
+Trust CodeGraph results; do not re-verify them with grep. Use `rg` for literal text only. If CodeGraph is not initialized, ask: "I notice this project doesn't have CodeGraph initialized. Want me to run `codegraph init -i` to build the index?"
+
 ## Platform language
 
 Detect the repository host before writing process tasks:
@@ -81,12 +104,20 @@ Detect the repository host before writing process tasks:
 
 Do not generate GitHub Actions tasks for GitLab repositories. Do not generate GitLab CI tasks for GitHub repositories unless the repo already uses that pattern.
 
+## Compatibility
+
+Do not add backward-compatibility shims, aliases, dual paths, deprecation layers, or migrations unless the user or project requirements explicitly require compatibility.
+
+Do not silently break an existing public API, persisted data format, CLI contract, integration, or user workflow. Surface the break as an explicit decision. Add migration work only after the break or compatibility requirement is approved.
+
 ## Instructions
 
 1. **If implementation_plan.md doesn't exist:**
    - Read the spec file(s) the user points at (mvp.md, prd.md, brief.md). If none exists, ask.
+   - Read applicable project instructions and `context/resources/` before guessing.
    - Read CLAUDE.md and any standards docs (codingStandards.md) for project-specific rules.
    - Run repo-first discovery and summarize existing commands, gates, platform, and docs before planning.
+   - Trace the real flow and use CodeGraph blast-radius analysis for structural changes when indexed.
    - Identify project shape (see above). If ambiguous, ask before generating.
    - Identify platform shape (GitLab, GitHub, other, unknown) from remotes and existing CI files.
    - Generate the plan: every task traces to spec / user intent / known failure.
@@ -96,7 +127,8 @@ Do not generate GitHub Actions tasks for GitLab repositories. Do not generate Gi
 2. **If implementation_plan.md already exists:**
    - Read the current file.
    - Review what's complete vs. remaining.
-   - Ask the user what they want: add tasks, mark complete, reorganize, archive done sections, prune slop.
+   - Update it directly from the user's request.
+   - Preserve completed work, remove stale duplication, and avoid reorganizing unaffected sections.
 
 3. **Structure the plan with:**
    - Clear section headers grouped by milestone or capability (## M0 — Scaffolding, ## M1 — Core feature, etc.)
@@ -104,6 +136,7 @@ Do not generate GitHub Actions tasks for GitLab repositories. Do not generate Gi
    - Priority indicators where relevant (High, Medium, Low).
    - Estimated effort only when the spec or user has anchored a timeline.
    - Links to related spec sections, files, or issues — task-to-source traceability.
+   - Concrete acceptance criteria and the smallest relevant test, build, lint, or runtime check.
    - Review gates only where they control real risk. For secure-delivery projects, prefer explicit gates such as `/data-classification`, `/secure-code-review`, `/codex-review`, `/hardening-audit`, and `/release-readiness` at the milestone where their evidence is needed.
 
 4. **Example format** (deliberately minimal — do NOT pad with infra unless the spec requires it):
@@ -150,3 +183,14 @@ For an enterprise or compliance-sensitive repo, add gates only where risk requir
 ```
 
 If the project does not handle sensitive data, production access, or customer-facing delivery, defer these gates rather than adding them by default.
+
+## Final check
+
+Before saving, verify that:
+
+- Every task traces to the spec, explicit user intent, or a concrete failure.
+- Every task contributes directly to the requested outcome.
+- Blast radius and contract risks are represented.
+- No simpler existing solution was missed.
+- No speculative compatibility or architecture work slipped in.
+- Completion state and acceptance criteria are verifiable.
