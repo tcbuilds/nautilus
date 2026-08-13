@@ -39,3 +39,4 @@ logs/
 
 # Local agent state
 .claude/
+.pi/subagents/

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pi review findings ledger",
+  "description": "Parent-owned record of finding fingerprints across Pi review and fix-verification rounds. Reviewer and worker children do not write this ledger.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ledger_version", "updated_at", "current_round", "entries"],
+  "properties": {
+    "ledger_version": {"type": "string"},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "current_round": {"type": "integer", "minimum": 1},
+    "baseline_ref": {"type": "string"},
+    "entries": {"type": "array", "items": {"$ref": "#/$defs/entry"}},
+    "breaker": {"$ref": "#/$defs/breaker"}
+  },
+  "$defs": {
+    "severity": {"type": "string", "enum": ["Critical", "High", "Medium", "Low"]},
+    "evidenceClass": {"type": "string", "enum": ["EMPIRICALLY_VERIFIED", "PROBED", "HYPOTHETICAL"]},
+    "scopeStatus": {"type": "string", "enum": ["REGRESSION", "NEWLY_REACHABLE", "PRE_EXISTING", "HYPOTHETICAL"]},
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fingerprint", "title", "severity", "evidence_class", "scope_status", "status", "first_seen_round", "last_updated_round", "fix_attempts", "blocking"],
+      "properties": {
+        "fingerprint": {"type": "string", "minLength": 1},
+        "title": {"type": "string"},
+        "file": {"type": "string"},
+        "line": {"type": ["integer", "null"], "minimum": 1},
+        "symbol": {"type": "string"},
+        "severity": {"$ref": "#/$defs/severity"},
+        "evidence_class": {"$ref": "#/$defs/evidenceClass"},
+        "scope_status": {"$ref": "#/$defs/scopeStatus"},
+        "status": {"type": "string", "enum": ["open", "fixed", "verified", "reopened", "accepted", "backlogged"]},
+        "violated_invariant": {"type": "string"},
+        "root_cause_family": {"type": "string"},
+        "first_seen_round": {"type": "integer", "minimum": 1},
+        "last_updated_round": {"type": "integer", "minimum": 1},
+        "fix_attempts": {"type": "integer", "minimum": 0},
+        "clarifications_used": {"type": "integer", "minimum": 0, "maximum": 1},
+        "blocking": {"type": "boolean"},
+        "blocking_reason": {"type": "string"},
+        "disposition_rationale": {"type": "string"},
+        "backlog_link": {"type": ["string", "null"]},
+        "proof_test": {"type": "string"},
+        "reviewer_run_id": {"type": "string", "description": "Latest retained reviewer run ID that owns this fingerprint."},
+        "history": {"type": "array", "items": {"$ref": "#/$defs/historyItem"}}
+      }
+    },
+    "historyItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["round", "status", "note"],
+      "properties": {
+        "round": {"type": "integer", "minimum": 1},
+        "status": {"type": "string", "enum": ["open", "fixed", "verified", "reopened", "accepted", "backlogged"]},
+        "note": {"type": "string"},
+        "evidence": {"type": "string"},
+        "reviewer_run_id": {"type": "string"}
+      }
+    },
+    "breaker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tripped"],
+      "properties": {
+        "tripped": {"type": "boolean"},
+        "trigger": {"type": "string", "enum": ["same_fingerprint_survived_two_fixes", "shared_root_cause_family", "clarification_exhausted", "evidence_conflict"]},
+        "family_fingerprints": {"type": "array", "items": {"type": "string"}},
+        "architect_runs": {"type": "integer", "minimum": 0, "maximum": 1},
+        "note": {"type": "string"}
+      }
+    }
+  }
+}

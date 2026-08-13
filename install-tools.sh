@@ -32,6 +32,7 @@
 #   sh install-tools.sh --agents baz                 # subset of agents
 #   sh install-tools.sh --skills all --agents none   # explicit aliases
 #   sh install-tools.sh --dest /custom/.claude       # different home
+#   sh install-tools.sh --skills pi-implement,pi-review --agents none --dest "$HOME/.agents"
 #   sh install-tools.sh --no-overwrite               # refuse to clobber
 #   sh install-tools.sh --codex-profiles             # also layer codex profiles
 #   sh install-tools.sh --ref v1.0.0                 # pin to a tag/branch
@@ -79,6 +80,7 @@ Examples:
   install-tools.sh --skills refine-spec,claude-build
   install-tools.sh --agents git-platform-engineer --no-overwrite
   install-tools.sh --skills codex-review,codex-implement --codex-profiles
+  install-tools.sh --skills pi-implement,pi-review --agents none --dest "$HOME/.agents"
   install-tools.sh --dest /tmp/fresh-claude --ref v1.0.0
 EOF
 }

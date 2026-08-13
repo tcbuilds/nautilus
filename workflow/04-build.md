@@ -4,11 +4,19 @@ Execute the plan. From here on, the workflow runs mostly through skills and agen
 
 ## What to run
 
-`/claude-build`. It reads `implementation_plan.md` and dispatches specialized agents (via the Agent tool) to execute tasks.
+Choose the active harness's native workflow:
+
+- **Claude Code:** `/claude-build` reads `implementation_plan.md` and dispatches specialized agents through the Agent tool.
+- **Pi:** `/skill:pi-implement` reads the same plan and coordinates `worker`, `reviewer`, and optional `oracle` roles through `pi-subagents`. It uses one writer per worktree, Pi-managed isolation for safe parallel lanes, and `/skill:pi-review` for the independent gate.
+- **Codex-backed flows:** `/codex-implement` remains available when its external CLI/profile workflow is intentionally required.
+
+Do not make one harness shell out to another merely to obtain implementation or review.
 
 ## Orchestrator discipline
 
-Top-level Claude Code remains an orchestrator. It does not write code, run commands, or make edits directly. Every task is delegated to a specialist:
+The top-level session remains the decision-maker and gate owner. In Claude Code, repository policy may require strict orchestrator-only behavior: no direct edits or commands, with every task delegated to a specialist. In Pi, `/skill:pi-implement` follows its native parent-owned contract: the parent resolves design, scopes work, verifies evidence, and owns Git while one `worker` writes in each active worktree.
+
+Common Claude Code specialist routing includes:
 
 - Python core work → `python-core-engineer`
 - Performance work → `performance-optimizer`
@@ -36,7 +44,7 @@ After every phase:
 - Keep edit-time feedback fast and advisory when a task is still incomplete. Enforce cumulative requirements, such as adding tests for new behavior, at the final task gate.
 - A compressed replay may replace an elapsed dogfood window only with explicit owner approval. Record the scenarios covered and what the replay cannot prove; never claim historical commands ran when they were substituted.
 - Preserve failed release tags and attempts. Fix forward with a new version so the deployment record remains auditable.
-- Make review independent of implementation, but executor-aware. When the active model is already Codex, review the diff directly instead of dispatching a redundant `codex-review` subagent. Other harnesses may keep their own independent reviewer.
+- Make review independent of implementation, but executor-aware. Pi uses fresh-context `/skill:pi-review` reviewers and may choose a different capable model family when policy and availability allow it. Codex-backed flows use `/codex-review`; do not dispatch a redundant external reviewer when the active harness already provides an equivalent independent gate.
 - Treat timeouts as bounded repository configuration. A universal short limit can turn a slow passing suite into false evidence.
 
 ## What carries you the rest of the way

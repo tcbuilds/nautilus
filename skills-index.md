@@ -1,6 +1,6 @@
 # Skills Index
 
-Quick reference for the Claude Code skills used in the nautilus workflow.
+Quick reference for the agent skills used in the nautilus workflow.
 
 | Skill | Purpose | Workflow phase |
 |---|---|---|
@@ -14,6 +14,8 @@ Quick reference for the Claude Code skills used in the nautilus workflow.
 | `/bro` | Restate the previous response in plain human language with no jargon. | Cross-cutting — Communication |
 | `/codex-review` | Run a second-pass Codex review gate over changed files and block Critical/High findings. | Cross-cutting — Review |
 | `/codex-implement` | Execute one slice or an implementation-plan task, phase, or full plan through parallel isolated Luna workers and one integrated Sol review per phase. | Phase 4 / Cross-cutting — Implementation |
+| `/skill:pi-implement` | Execute a task, phase, or plan through Pi-native workers, managed worktrees, parent verification, and the Pi-native review gate. | Phase 4 / Cross-cutting — Implementation |
+| `/skill:pi-review` | Run fresh-context Pi reviewers, synthesize evidence-backed findings, and verify fixes through retained reviewer runs. | Cross-cutting — Review |
 | `/hardening-audit` | Audit web apps, APIs, LLM integrations, and MCP/agent tool surfaces for production hardening gaps. | Cross-cutting — Security |
 | `/compliance-review` | Review repository evidence and gaps for enterprise or regulated-environment readiness without claiming certification. | Cross-cutting — Compliance |
 | `/data-classification` | Classify data flows, storage, logs, prompts, MCP outputs, and retention rules. | Cross-cutting — Data governance |

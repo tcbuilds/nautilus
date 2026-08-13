@@ -18,7 +18,7 @@ AI-assisted development is still software development. Nautilus makes that visib
 2. **[Spec Refinement](workflow/01-spec-refinement.md)** — `/refine-spec` interrogates the draft and tightens it.
 3. **[Init](workflow/02-init.md)** — `/init` generates a project-level `CLAUDE.md` rooted in the standards.
 4. **[Roadmap](workflow/03-roadmap.md)** — `/roadmap` produces `implementation_plan.md` with phased checkboxes.
-5. **[Build](workflow/04-build.md)** — `/claude-build` dispatches specialized agents to execute the plan.
+5. **[Build](workflow/04-build.md)** — use the active harness's native orchestrator: `/claude-build` in Claude Code or `/skill:pi-implement` in Pi.
 6. **[Incident Response](workflow/05-incident-response.md)** — Severity ladder, mitigation discipline, and blameless postmortems for when production breaks.
 7. **[Retrospective](workflow/06-retrospective.md)** — Per-phase and end-of-project retros with a DORA scoreboard, feeding lessons back into the playbook.
 8. **[Maintaining the Playbook](workflow/07-maintaining-the-playbook.md)** — `/nautilus-sync` promotes mature skills and agents into this repo with sanitization.
@@ -82,6 +82,15 @@ curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tool
 
 That writes each skill into `$HOME/.claude/skills/<skill-name>/` and each agent into `$HOME/.claude/agents/<agent-name>.md`. Defaults install everything available; existing files are overwritten (sync semantics).
 
+Install the Pi-native implementation and review skills into Pi's shared Agent Skills directory:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
+  --skills pi-implement,pi-review --agents none --dest "$HOME/.agents"
+```
+
+Pi discovers `$HOME/.agents/skills/` globally. Invoke them as `/skill:pi-implement` and `/skill:pi-review`. They require `pi-subagents` 0.46.0 or newer; they use native workers, reviewers, managed worktrees, retained runs, and acceptance evidence instead of invoking an external agent CLI.
+
 Filter by name or opt out of clobbering:
 
 ```sh
@@ -96,6 +105,10 @@ curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tool
 
 # Different destination root
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- --dest /tmp/fresh-claude
+
+# Pi-native skills only
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
+  --skills pi-implement,pi-review --agents none --dest "$HOME/.agents"
 ```
 
 See `sh install-tools.sh --help` for the full flag list (`--skills`, `--agents`, `--dest`, `--no-overwrite`, `--ref`).
@@ -161,6 +174,12 @@ nautilus/
 │   └── ci-pipeline.yml
 ├── skills/
 │   ├── README.md
+│   ├── pi-implement/
+│   │   ├── SKILL.md
+│   │   └── references/plan-orchestration.md
+│   ├── pi-review/
+│   │   ├── SKILL.md
+│   │   └── assets/findings-ledger.schema.json
 │   └── <skill-name>/SKILL.md
 ├── agents/
 │   ├── README.md

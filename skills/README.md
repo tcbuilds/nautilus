@@ -1,6 +1,6 @@
 # skills/
 
-This directory holds the Claude Code skills shipped with the nautilus playbook.
+This directory holds Agent Skills-compatible workflows shipped with the nautilus playbook. Most are portable across harnesses; runtime-specific skills state their compatibility in frontmatter and prose.
 
 It will fill out over time as skills prove themselves useful across projects. Right now the canonical workflow skills live in `skills-index.md` at the repo root, which is the quick-reference table. The per-skill assets in this directory are the loadable artifacts.
 
@@ -11,7 +11,7 @@ Each skill is a directory under `skills/<skill-name>/`. At minimum it contains:
 - `SKILL.md` — the loadable skill prose with frontmatter.
 - Optional scripts, templates, or assets that the skill references. They live alongside `SKILL.md` and travel with it on install.
 
-This is the same shape Claude Code expects under `~/.claude/skills/<name>/`, so the directory is copy-ready.
+This is the directory shape used by Claude Code, Codex, and Pi's Agent Skills support, so each skill remains copy-ready.
 
 Suggested prose structure for the `SKILL.md` body:
 
@@ -37,12 +37,19 @@ When a skill earns its place in the playbook (used across two or more projects, 
 
 The `/nautilus-sync` skill automates the sanitize-and-copy step.
 
-## Installing into `~/.claude/skills/`
+## Installing skills
 
-User-level install via `install-tools.sh` at the repo root:
+Claude Code user-level install:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh
 ```
 
-That copies every skill directory in this folder into `$HOME/.claude/skills/` so Claude Code auto-loads them. Pass `--skills name1,name2` to install a subset, `--no-overwrite` to refuse to clobber existing copies, or `--dest DIR` to target a non-default home.
+Pi user-level install for Pi-native skills:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
+  --skills pi-implement,pi-review --agents none --dest "$HOME/.agents"
+```
+
+The first command installs under `$HOME/.claude/`; the Pi command installs under `$HOME/.agents/`, whose `skills/` directory Pi discovers globally. Pass `--skills name1,name2` to select a subset or `--no-overwrite` to refuse conflicts. Invoke the installed workflows as `/skill:pi-implement` and `/skill:pi-review`. They require `pi-subagents` 0.46.0 or newer.

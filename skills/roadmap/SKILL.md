@@ -141,7 +141,7 @@ Do not silently break an existing public API, persisted data format, CLI contrac
    - Estimated effort only when the spec or user has anchored a timeline.
    - Links to related spec sections, files, or issues — task-to-source traceability.
    - Concrete acceptance criteria and the smallest relevant test, build, lint, or runtime check.
-   - Review gates only where they control real risk. For secure-delivery projects, prefer explicit gates such as `/data-classification`, `/secure-code-review`, `/codex-review`, `/hardening-audit`, and `/release-readiness` at the milestone where their evidence is needed.
+   - Review gates only where they control real risk. For secure-delivery projects, prefer explicit gates such as `/data-classification`, `/secure-code-review`, the active harness's native independent gate (`/skill:pi-review` in Pi or `/codex-review` in Codex-backed flows), `/hardening-audit`, and `/release-readiness` at the milestone where their evidence is needed.
 
 4. **Example format** (deliberately minimal — do NOT pad with infra unless the spec requires it):
 
@@ -179,7 +179,7 @@ For an enterprise or compliance-sensitive repo, add gates only where risk requir
 - [ ] {feature from spec §X}
   - [ ] Implement behavior end-to-end.
   - [ ] Add tests for accepted and rejected paths.
-  - [ ] Run `/codex-review` on changed files before marking complete.
+  - [ ] Run the active harness's independent review gate (`/skill:pi-review` in Pi or `/codex-review` in Codex-backed flows) on changed files before marking complete.
 
 ## Release gate
 - [ ] Run `/hardening-audit` for production, auth, API, LLM, MCP, or infrastructure changes.

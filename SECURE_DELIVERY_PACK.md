@@ -4,12 +4,19 @@ This pack is a small, public-safe set of skills, templates, and agent roles for 
 
 ## Install
 
-Install the secure-delivery skills and agent roles:
+Install the secure-delivery skills and agent roles for Claude Code and Codex-backed flows:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
   --skills warmup,handoff,refine-spec,roadmap,claude-build,repo-orientation,codex-review,codex-implement,hardening-audit,compliance-review,data-classification,secure-code-review,release-readiness,adr-risk-register \
   --agents git-platform-engineer,repo-investigator,security-reviewer,red-team-analyst,test-engineer,technical-writer,compliance-reviewer,python-core-engineer,typescript-core-engineer,rust-systems-engineer,sql-state-architect,linux-sre-master,network-diagnostics,performance-optimizer
+```
+
+Install the Pi-native workflows separately into Pi's global Agent Skills directory:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tools.sh | sh -s -- \
+  --skills pi-implement,pi-review --agents none --dest "$HOME/.agents"
 ```
 
 Install all Nautilus tools:
@@ -20,7 +27,13 @@ curl -fsSL https://raw.githubusercontent.com/tcbuilds/nautilus/main/install-tool
 
 ## Prerequisites
 
-Only the Codex-backed skills need external tooling. `/warmup`, `/handoff`, `/roadmap`, `/adr-risk-register`, and the rest of the pack have no external dependency.
+The runtime-specific implementation and review skills need their corresponding harness tooling. `/warmup`, `/handoff`, `/roadmap`, `/adr-risk-register`, and the rest of the pack have no external dependency.
+
+Required for `/skill:pi-review` and `/skill:pi-implement`:
+
+- Pi with `pi-subagents` 0.46.0 or newer enabled.
+- Executable `worker` and `reviewer` agents; `oracle` is needed only for the repeated-finding circuit breaker.
+- A clean Git source state when using Pi-managed parallel worktrees. Single-writer workflows can preserve an existing worktree when project policy allows it.
 
 Required for `/codex-review` and `/codex-implement`:
 
@@ -66,6 +79,8 @@ cp "$HOME"/.claude/skills/codex-*/assets/*.config.toml "${CODEX_HOME:-$HOME/.cod
 - `/repo-orientation` - creates onboarding-quality repo breakdowns for shared codebases.
 - `/codex-review` - runs a second-pass Codex review and blocks Critical/High findings.
 - `/codex-implement` - executes one slice or an implementation-plan task, phase, or full plan through file-owned Luna workers in isolated worktrees; the parent verifies each slice and one independent Sol reviewer gates the integrated phase.
+- `/skill:pi-review` - runs fresh-context Pi reviewers, synthesizes evidence-backed findings, and verifies fixes through retained reviewer runs.
+- `/skill:pi-implement` - executes tasks or plans through Pi-native workers, managed worktrees, parent verification, and the Pi-native review gate without invoking an external agent CLI.
 - `/hardening-audit` - checks production, LLM, MCP, API, and infrastructure hardening.
 - `/compliance-review` - maps evidence and gaps for enterprise or regulated-environment readiness.
 - `/data-classification` - identifies sensitive data and handling rules.
