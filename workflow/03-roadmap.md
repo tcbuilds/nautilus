@@ -10,9 +10,9 @@ The `/roadmap` skill, against the refined `mvp.md` or `idea.md`.
 
 `implementation_plan.md` at the project root. Markdown task checkboxes, organized into phases.
 
-## Phase 0 of the roadmap is always foundational
+## Foundations are conditional
 
-Phase 0 in the generated plan is the scaffolding work: repo init, dependency install, base directory structure, environment configuration, lint/test setup, CI skeleton. It is not the product. Get this right and the rest goes faster; get it wrong and every later phase has friction.
+Add a foundational phase only when the request or repository actually needs one. Reuse existing structure, commands, dependencies, and gates first. For a focused change, begin with the first shippable behavior; do not invent repo initialization, scaffolding, environment configuration, lint/test setup, or CI work by default.
 
 ## Subsequent phases
 
@@ -39,4 +39,4 @@ If the task is too big to ship in 2 days, split it into thinner vertical slices,
 
 ## Exit criteria
 
-`implementation_plan.md` exists, Phase 0 covers all foundational work, every subsequent task is scoped tightly enough to delegate, and the plan as a whole covers the spec without gaps.
+`implementation_plan.md` exists, every task traces to a requirement or concrete repository risk, each task is scoped tightly enough to delegate, and the smallest complete plan covers the spec without gaps. Persisted-data survival, rollback/recovery, security, and supported public contracts remain protected without speculative compatibility machinery.

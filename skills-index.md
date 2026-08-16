@@ -6,7 +6,7 @@ Quick reference for the agent skills used in the nautilus workflow.
 |---|---|---|
 | `/refine-spec` | Interactively quiz the user across multiple rounds to fill spec gaps and resolve ambiguity in `mvp.md` / `idea.md`. | Phase 1 — Spec Refinement |
 | `/init` | Scan the codebase and generate the project's `CLAUDE.md` with orchestrator rules and standards references. (Claude Code built-in, not shipped here.) | Phase 2 — Init |
-| `/roadmap` | Generate `implementation_plan.md` with Markdown checkbox phases from the refined spec. | Phase 3 — Roadmap |
+| `/roadmap` | Generate the smallest evidence-backed `implementation_plan.md`, rejecting speculative architecture and compatibility work while preserving data recovery and supported contracts. | Phase 3 — Roadmap |
 | `/claude-build` | Read `implementation_plan.md`, dispatch specialized agents phase by phase, and gate every task on an independent Codex review before marking it complete. | Phase 4 — Build |
 | `/warmup` | Load repo-local rules, recent git history, current state, commands, and likely next steps for a fresh session. | Cross-cutting — Session start |
 | `/handoff` | Write `HANDOFF.md` with current state, decisions, validation, risks, and exact resume steps. | Cross-cutting — Session end |

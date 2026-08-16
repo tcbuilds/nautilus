@@ -1,6 +1,6 @@
 ---
 name: roadmap
-description: Create or update implementation_plan.md with the smallest useful set of Markdown task checkboxes. Use when asked to plan a project, create a task list, organize implementation, identify what needs to be done, or update an existing implementation plan.
+description: Create or update implementation_plan.md with the smallest evidence-backed set of Markdown task checkboxes that fully satisfies the request. Use when asked to plan a project, create a task list, organize implementation, identify what needs to be done, or update an existing implementation plan.
 ---
 
 # Implementation Plan Manager
@@ -28,17 +28,21 @@ If a task doesn't trace to one of those three, it's slop. Common slop patterns t
 
 **Default to less.** The smallest plan that fully ships beats a large plan that suffocates. If you're unsure whether a task belongs, ask the user instead of emitting it.
 
-## Smallest solution first
+## Mandatory simplicity gate
 
-Before emitting tasks, stop at the first option that fully meets the request:
+Understand the real flow first, then stop at the first option that fully meets the request:
 
-1. Skip work that is not needed.
-2. Reuse an existing helper, type, component, or pattern.
-3. Prefer the standard library or native platform.
-4. Prefer an already-installed dependency over adding one.
-5. Plan only the minimum new code that works.
+1. Does this need to exist? If not, skip it.
+2. Does the codebase already provide it? Reuse it.
+3. Can the standard library provide it? Use it.
+4. Can a native platform feature provide it? Use it.
+5. Can an already-installed dependency provide it? Use it.
+6. Can one direct change provide it? Prefer that.
+7. Only then plan the minimum new code that works.
 
-Do not plan speculative abstractions, scaffolding, dependencies, configuration, refactors, compatibility machinery, or future-proofing. Trace the real flow and fix shared root causes once instead of planning repeated symptom patches. Preserve security, trust-boundary validation, accessibility, and data-loss protection.
+Do not plan speculative abstractions or extensibility, new dependencies, configurable knobs for fixed values, unrelated refactors, scaffolding for future work, redundant fallbacks, hypothetical infrastructure, or compatibility machinery without a real consumer. Trace the real flow and fix shared root causes once instead of planning repeated symptom patches. The smallest complete change wins; code golf, skipped comprehension, and fragile shortcuts do not.
+
+Do not simplify away security, privacy, trust-boundary validation, accessibility, or error handling that prevents data loss.
 
 ## Task shape
 
@@ -106,11 +110,18 @@ Detect the repository host before writing process tasks:
 
 Do not generate GitHub Actions tasks for GitLab repositories. Do not generate GitLab CI tasks for GitHub repositories unless the repo already uses that pattern.
 
-## Compatibility
+## Compatibility boundary
 
-Do not add backward-compatibility shims, aliases, dual paths, deprecation layers, or migrations unless the user or project requirements explicitly require compatibility.
+Backward compatibility is not a default requirement. Do not plan shims, aliases, dual paths, deprecation layers, or migrations for unreleased or internal formats merely to preserve old implementation details. When a clean break is allowed, plan the direct replacement and deletion of the obsolete path.
 
-Do not silently break an existing public API, persisted data format, CLI contract, integration, or user workflow. Surface the break as an explicit decision. Add migration work only after the break or compatibility requirement is approved.
+Compatibility and recovery remain required when supported by evidence:
+
+- persisted user or database data must survive;
+- schema and data migrations need safe rollback or recovery where failure can corrupt or strand data;
+- explicitly supported public or stable APIs, CLI contracts, file formats, integrations, and user workflows must be preserved or changed through an explicit decision;
+- security, privacy, trust-boundary validation, accessibility, and error handling that prevents data loss must not be simplified away.
+
+Every compatibility task must name the real consumer or persisted data, the failure caused by omitting it, and the requirement that justifies it. Otherwise remove the task.
 
 ## Instructions
 
@@ -196,5 +207,7 @@ Before saving, verify that:
 - Every task contributes directly to the requested outcome.
 - Blast radius and contract risks are represented.
 - No simpler existing solution was missed.
-- No speculative compatibility or architecture work slipped in.
+- No speculative abstraction, extensibility, fallback, infrastructure, or compatibility work slipped in.
+- Every compatibility task names a real consumer, persisted-data requirement, or explicit contract.
+- Persisted-data survival, rollback/recovery, security, and supported public contracts remain protected.
 - Completion state and acceptance criteria are verifiable.
