@@ -1,12 +1,13 @@
 # examples/
 
-This directory holds real past trios from completed projects:
+This directory holds real past trios from completed projects and examples of AI harness configuration:
 
 - `mvp.md` — the refined spec.
 - `CLAUDE.md` — the project-level orchestrator instructions.
 - `implementation_plan.md` — the phased roadmap.
+- `harnesses/` — global configuration examples for specific AI coding harnesses.
 
-Each example lives in its own subdirectory named after the project.
+Project examples live in their own subdirectories named after the project. Harness examples live under `harnesses/<harness>/` and are intended to be copied into the corresponding global configuration directory.
 
 ## Sanitization
 
