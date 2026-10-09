@@ -13,13 +13,14 @@ Quick reference for the agent skills used in the nautilus workflow.
 | `/repo-orientation` | Create `repo_orientation.md` explaining purpose, architecture, commands, tests, deployment, and safe-change workflow. | Cross-cutting — Onboarding |
 | `/bro` | Restate the previous response in plain human language with no jargon. | Cross-cutting — Communication |
 | `/codex-review` | Run a second-pass Codex review gate over changed files and block Critical/High findings. | Cross-cutting — Review |
-| `/codex-implement` | Execute one slice or an implementation-plan task, phase, or full plan through parallel isolated Luna workers and one integrated Sol review per phase. | Phase 4 / Cross-cutting — Implementation |
+| `/codex-implement` | Execute one slice or an implementation-plan task, phase, or full plan through parallel isolated Luna workers and one integrated Astra review per phase. | Phase 4 / Cross-cutting — Implementation |
 | `/skill:pi-implement` | Execute a task, phase, or plan through Pi-native workers, managed worktrees, parent verification, and the Pi-native review gate. | Phase 4 / Cross-cutting — Implementation |
 | `/skill:pi-review` | Run fresh-context Pi reviewers, synthesize evidence-backed findings, and verify fixes through retained reviewer runs. | Cross-cutting — Review |
 | `/hardening-audit` | Audit web apps, APIs, LLM integrations, and MCP/agent tool surfaces for production hardening gaps. | Cross-cutting — Security |
 | `/compliance-review` | Review repository evidence and gaps for enterprise or regulated-environment readiness without claiming certification. | Cross-cutting — Compliance |
 | `/data-classification` | Classify data flows, storage, logs, prompts, MCP outputs, and retention rules. | Cross-cutting — Data governance |
 | `/secure-code-review` | Review diffs and architecture for exploitable security defects and unsafe defaults. | Cross-cutting — Security |
+| `/prompt-injection-audit` | Perform a read-only, evidence-based OWASP LLM risk audit with deep coverage of direct and indirect prompt injection. | Cross-cutting — Security |
 | `/release-readiness` | Build go/no-go evidence before merge, deploy, delivery, or public release. | Cross-cutting — Release |
 | `/adr-risk-register` | Record consequential decisions, alternatives, risks, owners, and mitigations. | Cross-cutting — Governance |
 | `/nautilus-sync` | Sync a local skill or agent into a public-facing nautilus-shaped playbook repo as a sanitized loadable artifact. | Phase 7 — Maintaining the Playbook |

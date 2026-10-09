@@ -78,7 +78,7 @@ cp "$HOME"/.claude/skills/codex-*/assets/*.config.toml "${CODEX_HOME:-$HOME/.cod
 - `/claude-build` - executes planned tasks through specialized agents behind an independent review gate.
 - `/repo-orientation` - creates onboarding-quality repo breakdowns for shared codebases.
 - `/codex-review` - runs a second-pass Codex review and blocks Critical/High findings.
-- `/codex-implement` - executes one slice or an implementation-plan task, phase, or full plan through file-owned Luna workers in isolated worktrees; the parent verifies each slice and one independent Sol reviewer gates the integrated phase.
+- `/codex-implement` - executes one slice or an implementation-plan task, phase, or full plan through file-owned Luna workers in isolated worktrees; the parent verifies each slice and one independent Astra reviewer gates the integrated phase.
 - `/skill:pi-review` - runs fresh-context Pi reviewers, synthesizes evidence-backed findings, and verifies fixes through retained reviewer runs.
 - `/skill:pi-implement` - executes tasks or plans through Pi-native workers, managed worktrees, parent verification, and the Pi-native review gate without invoking an external agent CLI.
 - `/hardening-audit` - checks production, LLM, MCP, API, and infrastructure hardening.

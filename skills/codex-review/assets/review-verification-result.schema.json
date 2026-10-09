@@ -4,81 +4,284 @@
   "description": "Scoped re-check of prior findings plus the hunks changed since the last review. Not a fresh full review.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["status","reviewed_hunks","prior_finding_verdicts","new_findings","residual_risk","gate_decision"],
-  "properties": {
-    "status": {"type":"string","enum":["complete","blocked","failed"]},
-    "reviewed_hunks": {"type":"array","items":{"type":"string"},"description":"Files or hunks changed since the last review, the only new surface in scope."},
-    "prior_finding_verdicts": {"type":"array","items":{"$ref":"#/$defs/priorFindingVerdict"}},
-    "new_findings": {
-      "type":"array",
-      "description":"Findings arising only from the new hunks, ordered by severity, Critical first. JSON Schema cannot enforce array ordering; emit them already sorted.",
-      "items":{"$ref":"#/$defs/finding"}
-    },
-    "residual_risk": {"type":"array","items":{"$ref":"#/$defs/residualRisk"}},
-    "gate_decision": {"type":"string","enum":["PASS","BLOCKED"]},
-    "blockers": {"type":"array","items":{"type":"string"}}
-  },
-  "allOf": [
-    {"if":{"properties":{"status":{"const":"blocked"}},"required":["status"]},
-     "then":{"required":["blockers"],"properties":{"blockers":{"minItems":1}}}}
+  "required": [
+    "status",
+    "reviewed_hunks",
+    "prior_finding_verdicts",
+    "new_findings",
+    "residual_risk",
+    "gate_decision",
+    "blockers"
   ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": [
+        "complete",
+        "blocked",
+        "failed"
+      ]
+    },
+    "reviewed_hunks": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Files or hunks changed since the last review, the only new surface in scope."
+    },
+    "prior_finding_verdicts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/priorFindingVerdict"
+      }
+    },
+    "new_findings": {
+      "type": "array",
+      "description": "Findings arising only from the new hunks, ordered by severity, Critical first. JSON Schema cannot enforce array ordering; emit them already sorted.",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "residual_risk": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/residualRisk"
+      }
+    },
+    "gate_decision": {
+      "type": "string",
+      "enum": [
+        "PASS",
+        "BLOCKED"
+      ]
+    },
+    "blockers": {
+      "type": [
+        "array",
+        "null"
+      ],
+      "items": {
+        "type": "string"
+      }
+    }
+  },
   "$defs": {
-    "severity": {"type":"string","enum":["Critical","High","Medium","Low"]},
-    "evidenceClass": {"type":"string","enum":["EMPIRICALLY_VERIFIED","PROBED","HYPOTHETICAL"]},
-    "scopeStatus": {"type":"string","enum":["REGRESSION","NEWLY_REACHABLE","PRE_EXISTING","HYPOTHETICAL"]},
+    "severity": {
+      "type": "string",
+      "enum": [
+        "Critical",
+        "High",
+        "Medium",
+        "Low"
+      ]
+    },
+    "evidenceClass": {
+      "type": "string",
+      "enum": [
+        "EMPIRICALLY_VERIFIED",
+        "PROBED",
+        "HYPOTHETICAL"
+      ]
+    },
+    "scopeStatus": {
+      "type": "string",
+      "enum": [
+        "REGRESSION",
+        "NEWLY_REACHABLE",
+        "PRE_EXISTING",
+        "HYPOTHETICAL"
+      ]
+    },
     "priorFindingVerdict": {
-      "type":"object",
-      "additionalProperties":false,
-      "required":["fingerprint","verdict","new_evidence","reopen_justified"],
-      "properties":{
-        "fingerprint":{"type":"string","minLength":1,"description":"Fingerprint from the round-1 review, reused verbatim."},
-        "verdict":{
-          "type":"string",
-          "enum":["resolved","not_resolved","regressed","unverifiable"],
-          "description":"resolved: the invariant now holds. not_resolved: the same invariant still breaks. regressed: the fix introduced a new break on this path. unverifiable: the supplied hunks do not let this be decided."
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fingerprint",
+        "verdict",
+        "new_evidence",
+        "reopen_justified",
+        "reopen_rationale",
+        "proof_test_status",
+        "severity",
+        "evidence_class"
+      ],
+      "properties": {
+        "fingerprint": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Fingerprint from the round-1 review, reused verbatim."
         },
-        "new_evidence":{"type":"string","description":"Evidence gathered in this round. A resolved fingerprint may only be reopened on new evidence, and an EMPIRICALLY_VERIFIED finding only on a new probe."},
-        "reopen_justified":{"type":"boolean","description":"True only when new_evidence meets the reopen bar for this fingerprint's original evidence class."},
-        "reopen_rationale":{"type":"string"},
-        "proof_test_status":{"type":"string","enum":["added_and_passing","added_and_failing","missing","vacuous"],"description":"State of the named proof test from the original finding. A vacuous proof test does not close a finding."},
-        "severity":{"$ref":"#/$defs/severity"},
-        "evidence_class":{"$ref":"#/$defs/evidenceClass"}
+        "verdict": {
+          "type": "string",
+          "enum": [
+            "resolved",
+            "not_resolved",
+            "regressed",
+            "unverifiable"
+          ],
+          "description": "resolved: the invariant now holds. not_resolved: the same invariant still breaks. regressed: the fix introduced a new break on this path. unverifiable: the supplied hunks do not let this be decided."
+        },
+        "new_evidence": {
+          "type": "string",
+          "description": "Evidence gathered in this round. A resolved fingerprint may only be reopened on new evidence, and an EMPIRICALLY_VERIFIED finding only on a new probe."
+        },
+        "reopen_justified": {
+          "type": "boolean",
+          "description": "True only when new_evidence meets the reopen bar for this fingerprint's original evidence class."
+        },
+        "reopen_rationale": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "proof_test_status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "added_and_passing",
+            "added_and_failing",
+            "missing",
+            "vacuous"
+          ],
+          "description": "State of the named proof test from the original finding. A vacuous proof test does not close a finding."
+        },
+        "severity": {
+          "$ref": "#/$defs/severity"
+        },
+        "evidence_class": {
+          "$ref": "#/$defs/evidenceClass"
+        }
       }
     },
     "finding": {
-      "type":"object",
-      "additionalProperties":false,
-      "required":["fingerprint","severity","title","file","line","symbol","evidence_class","scope_status","why_diff_owns_it","violated_invariant","failing_path","repair_direction","proof_test","evidence","baseline_evidence"],
-      "properties":{
-        "fingerprint":{"type":"string","minLength":1},
-        "severity":{"$ref":"#/$defs/severity"},
-        "title":{"type":"string"},
-        "file":{"type":"string"},
-        "line":{"type":["integer","null"],"minimum":1},
-        "symbol":{"type":"string"},
-        "evidence_class":{"$ref":"#/$defs/evidenceClass"},
-        "scope_status":{"$ref":"#/$defs/scopeStatus"},
-        "why_diff_owns_it":{"type":"string"},
-        "violated_invariant":{"type":"string"},
-        "failing_path":{"type":"string"},
-        "repair_direction":{"type":"string","description":"Direction of repair only. Never an executor brief."},
-        "proof_test":{"type":"string"},
-        "evidence":{"type":"string"},
-        "baseline_evidence":{"type":"string"},
-        "standard_reference":{"type":"string"},
-        "root_cause_family":{"type":"string","description":"Shared key when this finding traces to the same root cause as an existing fingerprint. Two or more new findings sharing a root cause is a circuit-breaker trigger."}
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fingerprint",
+        "severity",
+        "title",
+        "file",
+        "line",
+        "symbol",
+        "evidence_class",
+        "scope_status",
+        "why_diff_owns_it",
+        "violated_invariant",
+        "failing_path",
+        "repair_direction",
+        "proof_test",
+        "evidence",
+        "baseline_evidence",
+        "standard_reference",
+        "root_cause_family"
+      ],
+      "properties": {
+        "fingerprint": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "$ref": "#/$defs/severity"
+        },
+        "title": {
+          "type": "string"
+        },
+        "file": {
+          "type": "string"
+        },
+        "line": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "symbol": {
+          "type": "string"
+        },
+        "evidence_class": {
+          "$ref": "#/$defs/evidenceClass"
+        },
+        "scope_status": {
+          "$ref": "#/$defs/scopeStatus"
+        },
+        "why_diff_owns_it": {
+          "type": "string"
+        },
+        "violated_invariant": {
+          "type": "string"
+        },
+        "failing_path": {
+          "type": "string"
+        },
+        "repair_direction": {
+          "type": "string",
+          "description": "Direction of repair only. Never an executor brief."
+        },
+        "proof_test": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "baseline_evidence": {
+          "type": "string"
+        },
+        "standard_reference": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "root_cause_family": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Shared key when this finding traces to the same root cause as an existing fingerprint. Two or more new findings sharing a root cause is a circuit-breaker trigger."
+        }
       }
     },
     "residualRisk": {
-      "type":"object",
-      "additionalProperties":false,
-      "required":["description","disposition","rationale"],
-      "properties":{
-        "fingerprint":{"type":"string"},
-        "description":{"type":"string"},
-        "disposition":{"type":"string","enum":["backlogged","accepted","monitor"]},
-        "rationale":{"type":"string"},
-        "link":{"type":["string","null"]}
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "description",
+        "disposition",
+        "rationale",
+        "fingerprint",
+        "link"
+      ],
+      "properties": {
+        "fingerprint": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "description": {
+          "type": "string"
+        },
+        "disposition": {
+          "type": "string",
+          "enum": [
+            "backlogged",
+            "accepted",
+            "monitor"
+          ]
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "link": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       }
     }
   }

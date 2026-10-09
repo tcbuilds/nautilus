@@ -1,12 +1,12 @@
 ---
 name: codex-implement
-description: Execute one implementation slice or an implementation_plan.md task, phase, or full plan through parallel file-owned Codex CLI workers in isolated Git worktrees. Uses Luna max, focused slice proof, one integrated Sol review per phase, and phase-boundary commits while the parent owns design, verification, and Git.
+description: Execute one implementation slice or an implementation_plan.md task, phase, or full plan through parallel file-owned Codex CLI workers in isolated Git worktrees. Uses Luna max, focused slice proof, one integrated Astra review per phase, and phase-boundary commits while the parent owns design, verification, and Git.
 ---
 
 # Codex Implement
 
 The parent designs, slices, verifies, integrates, and owns Git. Luna implements.
-Sol reviews the integrated phase once; implementers never review their own work.
+Astra reviews the integrated phase once; implementers never review their own work.
 
 ## Usage
 
@@ -33,7 +33,7 @@ Install without overwriting existing profiles:
 - `assets/luna_max_executor.config.toml` -> `${CODEX_HOME:-$HOME/.codex}/luna_max_executor.config.toml`
 - `assets/luna_max_brief_rescuer.config.toml` -> `${CODEX_HOME:-$HOME/.codex}/luna_max_brief_rescuer.config.toml`
 
-Preflight the installed file, not `codex ... --help` (help does not load the profile): require the exact `${CODEX_HOME:-$HOME/.codex}/<name>.config.toml`, parse it with a local TOML parser, and assert expected model, effort, network, and delegation pins. Launch with `--strict-config` for Codex's recognized-key check. The default executor pins `gpt-5.6-luna` max. Optional brief rescuer also uses Luna max with a read-only sandbox. Review stays `gpt-5.6-sol` high.
+Preflight the installed file, not `codex ... --help` (help does not load the profile): require the exact `${CODEX_HOME:-$HOME/.codex}/<name>.config.toml`, parse it with a local TOML parser, and assert expected model, effort, network, and delegation pins. Launch with `--strict-config` for Codex's recognized-key check. The default executor pins `gpt-5.6-luna` max. Optional brief rescuer also uses Luna max with a read-only sandbox. Review stays `gpt-6-astra` high.
 
 Max is the executor default. High and xhigh remain explicit lower-cost overrides; switch
 profiles by name rather than editing one in place so the evidence records which tier ran.
@@ -74,7 +74,7 @@ Batching everything into one brief has a specific failure mode: when the hardest
   slice commit for deterministic integration into the phase worktree. Never push slice
   branches.
 - Verify each lane independently. Never let one lane's green suite stand in for another's.
-- Do not invoke Sol or `codex-review` for individual slices.
+- Do not invoke Astra or `codex-review` for individual slices.
 
 ## Launch
 
@@ -125,14 +125,14 @@ design gate:
 
 1. Write a short contract covering acceptance paths, evidence, fail-closed and degradation behavior, budgets, and preparation mechanics.
 2. If work prepares multiple inputs, queues/attaches jobs, or reads shared mutable state, include races and dedup/coalescing keys.
-3. Run one Sol review over all affected contracts plus seam files: ask which inputs create wrong-but-confident output and which evidence class is missing.
+3. Run one Astra review over all affected contracts plus seam files: ask which inputs create wrong-but-confident output and which evidence class is missing.
 4. Resolve findings before briefing Luna.
 
 ## Brief contract
 
 Cold-start brief, in this order:
 
-1. Mandatory read-first files, as ABSOLUTE paths you verified exist before briefing: repository instructions, `.claude/rules/standards.md`, every path-scoped rule whose `paths:` frontmatter matches an owned source/test/config file, and named source/tests. Require declared justification for any deviation. See "Standards reach Luna only through the brief" below — this item is load-bearing, not boilerplate.
+1. Mandatory read-first files, as ABSOLUTE paths you verified exist before briefing: repository instructions, `.claude/rules/standards.md`, every path-scoped rule whose `paths:` frontmatter matches an owned source/test/config file, and named source/tests. Require declared justification for any deviation. See "Standards reach Luna through LGTM hooks and the brief" below — this item is load-bearing, not boilerplate.
 2. Exact CodeGraph query when `.codegraph/` exists.
 3. Decided behavior: module placement, config conventions, failure semantics, and streaming behavior. Every judgment call already resolved — see "Resolve every subjective call before briefing" below. Luna implements; Claude designs.
 4. Surgical scope as a CLOSED file set — "these files and no others" — plus do-not-touch files, file-format quirks, and no commit/push. Require BLOCKED with a reason rather than silent expansion. An implicit file set reads as permission: a brief that lists files only under "read first" will get edits outside them, and the expansion is usually justified, which means the brief was under-specified rather than the executor wrong. Name every file another concurrent run holds.
@@ -154,15 +154,15 @@ Before launch, walk the brief for anything the executor could reasonably answer 
 
 If a call is genuinely the user's — scope, risk appetite, a behavior change the plan does not authorize — stop and ask the user. Do not route a user-level decision to the executor either.
 
-### Standards reach Luna only through the brief
+### Standards reach Luna through LGTM hooks and the brief
 
 Claude Code loads `.claude/rules/standards.md` every session because it has no
 `paths:` selector, then injects each matching `.claude/rules/**/*.md` file when a
-matching path is read or edited. **Codex has no equivalent.** It reads
-`AGENTS.md` / `AGENTS.local.md` at session start and nothing else. A rules
-POINTER inside `AGENTS.md` is not the rules CONTENT in context.
+matching path is read or edited. Native Codex does not auto-load those files,
+but installed LGTM Codex hooks load the materialized rule set and inject the
+applicable standards into Codex context.
 
-So an unnamed rule is an absent rule. Every standard the slice must honor — rule tiers, numeric limits, naming, comment placement, quality gates — reaches the executor only because the brief names the file by absolute path and requires reading it. Omit it and Luna writes reasonable code that violates house style, and the violation surfaces at the review gate instead of at authoring time, where it costs a fix round rather than nothing.
+The brief must still name the applicable rule files explicitly so the handoff is auditable and remains correct if hooks are unavailable. Include rule tiers, numeric limits, naming, comment placement, and quality gates instead of relying on an implicit pointer.
 
 Resolve the paths per launch; do not hardcode them:
 
@@ -176,12 +176,11 @@ Resolve the paths per launch; do not hardcode them:
    rules such as `rust.md` and craft patterns such as `patterns/rust.md`, plus
    cross-cutting rules such as security, testing, naming, and error handling.
    Never infer the rule set from language or filename alone.
-3. Only when no LGTM rule root exists, follow a standards document explicitly
-   named by repository instructions. A legacy `codingStandards.md` is a
-   compatibility fallback, not a default path to search.
+3. When no LGTM rule root exists, follow only standards explicitly named by
+   repository instructions; do not search for retired compatibility documents.
 4. **Verify each resolved path exists before briefing.** A repo copy can be absent on the CHECKED-OUT branch while present on another — rule files often arrive on the very feature branch that adds them, so a worktree cut from an older base legitimately lacks them. Confirm with `git ls-tree --name-only <branch> .claude/rules/` when a path is missing rather than assuming a broken checkout.
 5. Cite a path that does not resolve and the executor silently proceeds without that standard. Nothing errors. The brief looks complete.
-6. **When no rule root or explicit legacy document resolves, do not cite a path anyway.** Drop the standards-citation requirement, say so explicitly in the brief, and record the same fact on the harness task. A missing standard you named is recoverable at round 0; a fabricated path is silent.
+6. **When no rule root or explicit repository standard resolves, do not cite a path anyway.** Drop the standards-citation requirement, say so explicitly in the brief, and record the same fact on the harness task. A missing standard you named is recoverable at round 0; a fabricated path is silent.
 
 State the effort tier and the resolved rule paths in the harness task, so a later comparison between slices knows what each run actually had.
 
@@ -202,7 +201,7 @@ Then rerun every mutation yourself. Reasoning about which test covers a mutation
 
 ## Verify slices, integrate, then review the phase
 
-### Close each slice without Sol
+### Close each slice without Astra
 
 1. Read `$OUT` tail. Derive the change set using `git status --short`, `git diff --name-only`, and `git diff --stat`; record report mismatches.
 2. Require every changed path to be inside the slice's closed file set. Extra paths fail the slice rather than expanding its scope silently.
@@ -215,9 +214,9 @@ Do not run `codex-review` here. Focused proof plus scope verification closes a s
 ### Gate the integrated phase once
 
 1. After every required slice is integrated, run every configured repository validation command in the phase worktree.
-2. Start one fresh Sol `codex-review` over the complete `BASE_SHA..HEAD` phase diff. Empty, malformed, or stale review output is not a pass; retry once, then block.
+2. Start one fresh Astra `codex-review` over the complete `BASE_SHA..HEAD` phase diff. Empty, malformed, or stale review output is not a pass; retry once, then block.
 3. Critical/High findings trigger a bounded Luna-max repair from the current phase head. Use the verified repair contract below when diagnosis is cross-cutting. Integrate the fix and rerun all configured gates.
-4. Resume the same Sol reviewer only to verify its named findings. Maximum two fix/verification cycles; do not start per-slice or duplicate fresh reviews.
+4. Resume the same Astra reviewer only to verify its named findings. Maximum two fix/verification cycles; do not start per-slice or duplicate fresh reviews.
 5. Fix, backlog with a link, or explicitly accept Medium/Low findings according to project policy.
 6. Mark plan items complete only after every child slice, full gates, and the integrated review close. Commit at the phase boundary and push only when user/repository policy authorizes it.
 
@@ -241,7 +240,7 @@ Check:
 Disposition, in proportion:
 
 - Trivial and mechanical (a comment placement, a name) — fix it yourself and move on. Cheaper than a fix round.
-- Real but minor — note it for the Sol gate to weigh; do not spend a round.
+- Real but minor — note it for the Astra gate to weigh; do not spend a round.
 - Blocking only when the code is genuinely bad: a violated hard rule, a wrong abstraction that will spread, or a test that cannot fail. Send those to the Luna session as a fix round, not to the reviewer.
 
 Record the outcome against the effort tier that produced it, next to the tier and rule paths already noted on the harness task. Tier quality is an empirical question, and one line per slice is what makes it answerable later.
@@ -254,9 +253,9 @@ When `codex-review` returns a Sol-max contract:
 2. Verify every seam, path, symbol, and assumption against current CodeGraph and diff.
 3. Resolve repo-rule/acceptance conflicts; stop for unauthorized behavior or scope changes.
 4. Convert verified contract into normal Luna brief, including prohibited partial fixes and named regressions.
-5. Launch a Luna-max repair worktree from the current phase head, derive the actual Git diff, run focused checks, integrate it, then resume the phase Sol-high reviewer.
+5. Launch a Luna-max repair worktree from the current phase head, derive the actual Git diff, run focused checks, integrate it, then resume the phase Astra-high reviewer.
 
-Sol-high supplies repair direction. Sol-max supplies root-cause design after circuit breaker. Neither writes executor brief or owns gate.
+Astra-high supplies repair direction. Sol-max supplies root-cause design after circuit breaker. Neither writes executor brief or owns gate.
 
 ### Optional Luna-max brief rescue
 

@@ -4,75 +4,309 @@
   "description": "Orchestrator-owned record of every finding fingerprint across fix-loop rounds. Codex never writes this file; it is supplied to Codex as read-only context during verification and circuit-breaker escalation.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["ledger_version","updated_at","current_round","entries"],
+  "required": [
+    "ledger_version",
+    "updated_at",
+    "current_round",
+    "entries",
+    "baseline_ref",
+    "breaker"
+  ],
   "properties": {
-    "ledger_version": {"type":"string","description":"Schema revision of this ledger document, for example 1."},
-    "updated_at": {"type":"string","format":"date-time"},
-    "current_round": {"type":"integer","minimum":1,"description":"Round 1 is the fresh complete review. Each verification pass increments it."},
-    "baseline_ref": {"type":"string","description":"Target baseline every entry was classified against."},
-    "entries": {"type":"array","items":{"$ref":"#/$defs/entry"}},
-    "breaker": {"$ref":"#/$defs/breaker"}
-  },
-  "$defs": {
-    "severity": {"type":"string","enum":["Critical","High","Medium","Low"]},
-    "evidenceClass": {"type":"string","enum":["EMPIRICALLY_VERIFIED","PROBED","HYPOTHETICAL"]},
-    "scopeStatus": {"type":"string","enum":["REGRESSION","NEWLY_REACHABLE","PRE_EXISTING","HYPOTHETICAL"]},
-    "entry": {
-      "type":"object",
-      "additionalProperties":false,
-      "required":["fingerprint","title","severity","evidence_class","scope_status","status","first_seen_round","last_updated_round","fix_attempts","blocking"],
-      "properties":{
-        "fingerprint":{"type":"string","minLength":1,"description":"Stable key. Never renumbered between rounds; renumbering breaks breaker accounting."},
-        "title":{"type":"string"},
-        "file":{"type":"string"},
-        "line":{"type":["integer","null"],"minimum":1},
-        "symbol":{"type":"string"},
-        "severity":{"$ref":"#/$defs/severity"},
-        "evidence_class":{"$ref":"#/$defs/evidenceClass"},
-        "scope_status":{"$ref":"#/$defs/scopeStatus"},
-        "status":{
-          "type":"string",
-          "enum":["open","fixed","verified","reopened","accepted","backlogged"],
-          "description":"open: unaddressed. fixed: an executor claims repair, unverified. verified: a review pass confirmed the invariant holds. reopened: a later pass produced new evidence that the invariant still breaks. accepted: closed with a concrete rationale. backlogged: deferred with a link."
-        },
-        "violated_invariant":{"type":"string"},
-        "root_cause_family":{"type":"string","description":"Shared key across fingerprints tracing to one root defect. Two or more entries sharing this key is a circuit-breaker trigger."},
-        "first_seen_round":{"type":"integer","minimum":1},
-        "last_updated_round":{"type":"integer","minimum":1},
-        "fix_attempts":{"type":"integer","minimum":0,"description":"Count of completed repair attempts against this fingerprint. Reaching 2 while status is not verified trips the circuit breaker."},
-        "clarifications_used":{"type":"integer","minimum":0,"maximum":1,"description":"At most one clarification per finding family. A second request for the same family escalates instead."},
-        "blocking":{"type":"boolean","description":"True only when the finding is Critical or High with evidence class EMPIRICALLY_VERIFIED or PROBED and scope status REGRESSION or NEWLY_REACHABLE, or when user or project policy requires it to block."},
-        "blocking_reason":{"type":"string","description":"Required in practice when blocking is true and the entry is PRE_EXISTING: name the policy or ticket scope that makes it block."},
-        "disposition_rationale":{"type":"string","description":"Concrete reason for accepted or backlogged. Never a restatement of the finding."},
-        "backlog_link":{"type":["string","null"]},
-        "proof_test":{"type":"string"},
-        "history":{"type":"array","items":{"$ref":"#/$defs/historyItem"}}
-      }
+    "ledger_version": {
+      "type": "string",
+      "description": "Schema revision of this ledger document, for example 1."
     },
-    "historyItem": {
-      "type":"object",
-      "additionalProperties":false,
-      "required":["round","status","note"],
-      "properties":{
-        "round":{"type":"integer","minimum":1},
-        "status":{"type":"string","enum":["open","fixed","verified","reopened","accepted","backlogged"]},
-        "note":{"type":"string"},
-        "evidence":{"type":"string"}
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "current_round": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Round 1 is the fresh complete review. Each verification pass increments it."
+    },
+    "baseline_ref": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Target baseline every entry was classified against."
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/entry"
       }
     },
     "breaker": {
-      "type":"object",
-      "additionalProperties":false,
-      "required":["tripped"],
-      "properties":{
-        "tripped":{"type":"boolean"},
-        "trigger":{
-          "type":"string",
-          "enum":["same_fingerprint_survived_two_fixes","shared_root_cause_family","clarification_exhausted","evidence_conflict"]
+      "$ref": "#/$defs/breaker"
+    }
+  },
+  "$defs": {
+    "severity": {
+      "type": "string",
+      "enum": [
+        "Critical",
+        "High",
+        "Medium",
+        "Low"
+      ]
+    },
+    "evidenceClass": {
+      "type": "string",
+      "enum": [
+        "EMPIRICALLY_VERIFIED",
+        "PROBED",
+        "HYPOTHETICAL"
+      ]
+    },
+    "scopeStatus": {
+      "type": "string",
+      "enum": [
+        "REGRESSION",
+        "NEWLY_REACHABLE",
+        "PRE_EXISTING",
+        "HYPOTHETICAL"
+      ]
+    },
+    "entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fingerprint",
+        "title",
+        "severity",
+        "evidence_class",
+        "scope_status",
+        "status",
+        "first_seen_round",
+        "last_updated_round",
+        "fix_attempts",
+        "blocking",
+        "file",
+        "line",
+        "symbol",
+        "violated_invariant",
+        "root_cause_family",
+        "clarifications_used",
+        "blocking_reason",
+        "disposition_rationale",
+        "backlog_link",
+        "proof_test",
+        "history"
+      ],
+      "properties": {
+        "fingerprint": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable key. Never renumbered between rounds; renumbering breaks breaker accounting."
         },
-        "family_fingerprints":{"type":"array","items":{"type":"string"}},
-        "architect_runs":{"type":"integer","minimum":0,"maximum":1,"description":"One repair architect per finding family. A second escalation for the same family means stop and replan."},
-        "note":{"type":"string"}
+        "title": {
+          "type": "string"
+        },
+        "file": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "line": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "symbol": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "severity": {
+          "$ref": "#/$defs/severity"
+        },
+        "evidence_class": {
+          "$ref": "#/$defs/evidenceClass"
+        },
+        "scope_status": {
+          "$ref": "#/$defs/scopeStatus"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "fixed",
+            "verified",
+            "reopened",
+            "accepted",
+            "backlogged"
+          ],
+          "description": "open: unaddressed. fixed: an executor claims repair, unverified. verified: a review pass confirmed the invariant holds. reopened: a later pass produced new evidence that the invariant still breaks. accepted: closed with a concrete rationale. backlogged: deferred with a link."
+        },
+        "violated_invariant": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "root_cause_family": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Shared key across fingerprints tracing to one root defect. Two or more entries sharing this key is a circuit-breaker trigger."
+        },
+        "first_seen_round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "last_updated_round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fix_attempts": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Count of completed repair attempts against this fingerprint. Reaching 2 while status is not verified trips the circuit breaker."
+        },
+        "clarifications_used": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "At most one clarification per finding family. A second request for the same family escalates instead."
+        },
+        "blocking": {
+          "type": "boolean",
+          "description": "True only when the finding is Critical or High with evidence class EMPIRICALLY_VERIFIED or PROBED and scope status REGRESSION or NEWLY_REACHABLE, or when user or project policy requires it to block."
+        },
+        "blocking_reason": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Required in practice when blocking is true and the entry is PRE_EXISTING: name the policy or ticket scope that makes it block."
+        },
+        "disposition_rationale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Concrete reason for accepted or backlogged. Never a restatement of the finding."
+        },
+        "backlog_link": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "proof_test": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "history": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "$ref": "#/$defs/historyItem"
+          }
+        }
+      }
+    },
+    "historyItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "round",
+        "status",
+        "note",
+        "evidence"
+      ],
+      "properties": {
+        "round": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "fixed",
+            "verified",
+            "reopened",
+            "accepted",
+            "backlogged"
+          ]
+        },
+        "note": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "breaker": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "tripped",
+        "trigger",
+        "family_fingerprints",
+        "architect_runs",
+        "note"
+      ],
+      "properties": {
+        "tripped": {
+          "type": "boolean"
+        },
+        "trigger": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "same_fingerprint_survived_two_fixes",
+            "shared_root_cause_family",
+            "clarification_exhausted",
+            "evidence_conflict"
+          ]
+        },
+        "family_fingerprints": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "string"
+          }
+        },
+        "architect_runs": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "One repair architect per finding family. A second escalation for the same family means stop and replan."
+        },
+        "note": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       }
     }
   }

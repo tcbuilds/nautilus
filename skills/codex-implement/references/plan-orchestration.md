@@ -138,14 +138,14 @@ and pretend the slices were independent.
 After every required slice is integrated:
 
 1. Run every configured repository validation command in the phase worktree.
-2. Start one fresh Sol review over `BASE_SHA..HEAD`.
+2. Start one fresh Astra review over `BASE_SHA..HEAD`.
 3. Fix Critical/High findings through bounded Luna-max repair worktrees.
 4. Rerun all configured gates after each integrated repair.
-5. Resume the same Sol reviewer only to verify its findings.
+5. Resume the same Astra reviewer only to verify its findings.
 6. Stop after two failed fix/verification cycles and surface the blocker.
 7. Dispose Medium/Low findings under project policy.
 
-There is no per-slice Sol review and no second fresh full-phase review. One
+There is no per-slice Astra review and no second fresh full-phase review. One
 reviewer holds the integrated phase; finding-verification resumes that session.
 
 Only after this gate closes, mark fully satisfied parent checkboxes complete.

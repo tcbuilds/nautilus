@@ -10,10 +10,10 @@ Independent gate for correctness, security/data handling, performance/resources,
 ## Profiles and launch
 
 Inspect before installing under `${CODEX_HOME:-$HOME/.codex}/`:
-- `assets/sol_high_reviewer.config.toml` -> `sol_high_reviewer.config.toml`
+- `assets/astra_high_reviewer.config.toml` -> `astra_high_reviewer.config.toml`
 - `assets/sol_max_fix_architect.config.toml` -> `sol_max_fix_architect.config.toml`
 
-Preflight the installed file, not `codex ... --help` (help does not load the profile): require the exact `${CODEX_HOME:-$HOME/.codex}/<name>.config.toml`, parse it with a local TOML parser, and assert expected model, effort, network, and delegation pins. Launch with `--strict-config` for Codex's recognized-key check. Reviewer pins `gpt-5.6-sol` high; architect pins Sol max. No priority flag, Terra, or model fallback. Retry capacity errors with bounded backoff, else block gate.
+Preflight the installed file, not `codex ... --help` (help does not load the profile): require the exact `${CODEX_HOME:-$HOME/.codex}/<name>.config.toml`, parse it with a local TOML parser, and assert expected model, effort, network, and delegation pins. Launch with `--strict-config` for Codex's recognized-key check. Reviewer pins `gpt-6-astra` high; architect pins Sol max. No priority flag, Terra, or model fallback. Retry capacity errors with bounded backoff, else block gate.
 
 ### Variables
 
@@ -30,7 +30,7 @@ Preflight the installed file, not `codex ... --help` (help does not load the pro
 Create output paths under a temp dir the orchestrator owns, and delete them at closure unless the user asks to keep them.
 
 ```bash
-rtk proxy timeout 1800 codex exec -p sol_high_reviewer --strict-config \
+rtk proxy timeout 1800 codex exec -p astra_high_reviewer --strict-config \
   --add-dir "$HOME/.local/share/rtk" --skip-git-repo-check \
   --output-schema "<skill-dir>/assets/review-result.schema.json" -o "$OUT" \
   "Review these files. Review only: do not edit files. Compare target baseline to HEAD before classifying each finding. Use RTK for shell commands. Files: <files>. Cover correctness, security and data handling, performance and resource use, and tests and verification. Order findings by severity. Label each finding EMPIRICALLY_VERIFIED, PROBED, or HYPOTHETICAL and classify scope_status as REGRESSION, NEWLY_REACHABLE, PRE_EXISTING, or HYPOTHETICAL. For every finding identify why the changed diff owns it, the violated invariant, failing execution path, repair direction, and named proof test. Suggest the repair direction but do not write an executor brief. Return JSON matching the supplied schema. Keep prose terse; preserve code, commands, identifiers, probe output, and exact error strings verbatim." \
@@ -106,22 +106,22 @@ PASS / BLOCKED
 
 ## Fix loop
 
-Fresh round 1 reviews complete diff. Fixes use original Luna thread. Verify fixes by resuming original Sol with only ledger, prior findings, and changed hunks:
+Fresh round 1 reviews complete diff. Fixes use original Luna thread. Verify fixes by resuming original Astra reviewer with only ledger, prior findings, and changed hunks:
 
 ```bash
 # Use only the session ID captured from this round-1 launch's authoritative
 # output metadata. If it is absent or cannot be bound to this run, do not resume;
 # use the fresh scoped-verification fallback below.
 rtk proxy timeout 1800 codex exec resume "$SESSION_ID" -c sandbox_workspace_write.network_access=true -o "$OUT" \
-  -m gpt-5.6-sol -c model_reasoning_effort=high \
+  -m gpt-6-astra -c model_reasoning_effort=high \
   --output-schema "<skill-dir>/assets/review-verification-result.schema.json" \
   "Verify these fixes against your prior findings and the supplied ledger. Changed since your last review: <fix diff/hunks>. Re-check only your findings and the new hunks. Return JSON matching the supplied schema." \
   < /dev/null
 ```
 
-Run affected checks during fixes; Sol may probe but not rerun full suite. Require new evidence to reopen resolved fingerprints and new probe to contradict empirical findings. If resume fails, use one fresh scoped verification.
+Run affected checks during fixes; the Astra reviewer may probe but not rerun full suite. Require new evidence to reopen resolved fingerprints and new probe to contradict empirical findings. If resume fails, use one fresh scoped verification.
 
-When stable: orchestrator runs full relevant suite once, then fresh Sol reviews complete final diff with no ledger, old findings/verdicts, architect output, or clarification. Compare ledger only afterward. Any final-review code change stales suite evidence: focused checks -> full suite -> another fresh confirmation.
+When stable: orchestrator runs full relevant suite once, then a fresh Astra reviewer reviews complete final diff with no ledger, old findings/verdicts, architect output, or clarification. Compare ledger only afterward. Any final-review code change stales suite evidence: focused checks -> full suite -> another fresh confirmation.
 
 ### One clarification
 
@@ -130,7 +130,7 @@ If finding cannot become bounded executor brief:
 ```bash
 rtk proxy timeout 1800 codex exec resume "$SESSION_ID" \
   -c sandbox_workspace_write.network_access=true -o "$CLARIFY_OUT" \
-  -m gpt-5.6-sol -c model_reasoning_effort=high \
+  -m gpt-6-astra -c model_reasoning_effort=high \
   --output-schema "<skill-dir>/assets/review-clarification-result.schema.json" \
   "Clarify finding <fingerprint> only. State the violated invariant, failing path, repair direction, and named proof test. Do not write an executor brief, review unrelated code, or edit files." \
   < /dev/null
