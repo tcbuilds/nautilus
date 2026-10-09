@@ -20,7 +20,7 @@ Quick reference for the agent skills used in the nautilus workflow.
 | `/compliance-review` | Review repository evidence and gaps for enterprise or regulated-environment readiness without claiming certification. | Cross-cutting — Compliance |
 | `/data-classification` | Classify data flows, storage, logs, prompts, MCP outputs, and retention rules. | Cross-cutting — Data governance |
 | `/secure-code-review` | Review diffs and architecture for exploitable security defects and unsafe defaults. | Cross-cutting — Security |
-| `/prompt-injection-audit` | Audit LLM and agent integrations for injection, tool abuse, memory poisoning, and output effects using OWASP LLM Top 10 2026 and the Agentic Top 10. | Cross-cutting — Security |
+| `/prompt-injection-audit` | Audit LLM and agent integrations for injection, tool abuse, memory poisoning, and output effects using a GPT-6 Luna max swarm, OWASP LLM Top 10 2026, and the Agentic Top 10. | Cross-cutting — Security |
 | `/release-readiness` | Build go/no-go evidence before merge, deploy, delivery, or public release. | Cross-cutting — Release |
 | `/adr-risk-register` | Record consequential decisions, alternatives, risks, owners, and mitigations. | Cross-cutting — Governance |
 | `/nautilus-sync` | Sync a local skill or agent into a public-facing nautilus-shaped playbook repo as a sanitized loadable artifact. | Phase 7 — Maintaining the Playbook |

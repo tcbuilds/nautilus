@@ -4,6 +4,15 @@
 **Date:** [date]
 **Standards check:** [fetched 2026 PDF / used snapshot; live list page agreed or lagged]
 **Stack:** [providers, frameworks, model IDs, pinned or not]
+**Swarm model:** openai-codex/gpt-6-luna:max
+
+| Lane | Agent | Recorded model | Accepted |
+| --- | --- | --- | --- |
+| Ingress and prompt construction | red-team-analyst | [must be openai-codex/gpt-6-luna:max] | yes/no |
+| Tools, MCP, and agency | red-team-analyst | [must be openai-codex/gpt-6-luna:max] | yes/no |
+| Retrieval, memory, and hidden context | red-team-analyst | [must be openai-codex/gpt-6-luna:max] | yes/no |
+| Output, disclosure, and consumption | red-team-analyst | [must be openai-codex/gpt-6-luna:max] | yes/no |
+| Supply chain and architecture | red-team-analyst | [must be openai-codex/gpt-6-luna:max] | yes/no |
 **Call sites read:** [count read] / [count found]
 **Verdict:** Pass | Needs hardening | Fail
 
